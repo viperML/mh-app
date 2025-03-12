@@ -32,10 +32,10 @@ export function effectiveRaw(baseDmg: number, skills: FoldedSkills) {
     let critRate = 1.0;
     const dmg = baseDmg;
 
-    critRate += (skills["Critical Eye"] || 0) * 5 / 100;
+    critRate += (skills["Critical Eye"] || 0) * 5/100;
     const critDamage = 1.5;
 
-    return baseDmg * (1 - critDamage) + (baseDmg * critDamage) * critRate;
+    return baseDmg * (1-critDamage) + (baseDmg * critDamage) * critRate;
 }
 
 
