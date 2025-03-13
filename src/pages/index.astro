@@ -8,7 +8,9 @@ const parsed = parse();
 <Base>
     <h1 class="text-xl">mh-app</h1>
 
-    <App client:only="vue" />
+    <App
+        data={parsed}
+        client:only="vue"
+    />
 
-    <pre>{parsed}</pre>
 </Base>
