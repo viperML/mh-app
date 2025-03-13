@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite'
 import vue from '@astrojs/vue';
 
 export default defineConfig({
+    base: "/mh-base/",
     integrations: [
         vue(),
     ],
