@@ -1,7 +1,7 @@
-with import <nixpkgs> {};
+with import <nixpkgs> { };
 mkShell {
   packages = [
-    (nodejs.override {enableNpm = false;})
+    (nodejs.override { enableNpm = false; })
     pnpm
   ];
 }

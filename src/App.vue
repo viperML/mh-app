@@ -2,6 +2,8 @@
 import { type ArmorSkill, armors, foldSkills, type ArmorTypes } from "./armors.ts"
 import { computed, reactive, ref, watchEffect } from 'vue';
 
+import data from "../data/armor.json";
+
 
 const s: Record<string, string | undefined> = Object.fromEntries(["head", "arms"].map(name => [name, undefined]));
 const selectedArmors = reactive(s);
@@ -27,6 +29,8 @@ watchEffect(() => {
         </select>
 
       </template>
+
+      {{ data }}
 
     </div>
 
