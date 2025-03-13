@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro"
+import App from "../components/App.vue"
+import { parse } from "../../loader";
+
+const parsed = parse();
+---
+<Base>
+    <h1 class="text-xl">mh-app</h1>
+
+    <App client:only="vue" />
+
+    <pre>{parsed}</pre>
+</Base>
