@@ -1,46 +1,7 @@
+import type { ArmorInfo, RawArmor } from "../src/scripts/armor";
+
 import raw from "./raw.json";
-
-export const armorTypes = ["HELM", "BODY", "ARM", "WAIST", "LEG"] as const;
-export type ArmorType = typeof armorTypes[number];
-
-interface RawArmor {
-    name: string,
-    type: ArmorType,
-    index: number,
-    indexRaw: string,
-    nameRaw: string,
-
-    skill1?: string,
-    skillLevel1?: number,
-    skill2?: string,
-    skillLevel2?: number,
-    skill3?: string
-    skillLevel3?: number,
-
-    slot1: number,
-    slot2: number,
-    slot3: number,
-}
-
-export type ArmorSkill = {
-    name: string,
-    level: number
-}
-
-export type Armor = {
-    name: string,
-    type: ArmorType,
-    skills: ArmorSkill[],
-    slots: {
-        s1: number,
-        s2: number,
-        s3: number,
-    }
-}
-
 const rawTyped = raw as RawArmor[];
-
-export type ArmorInfo = Record<string, Armor>;
 
 export function parse(): ArmorInfo {
     return Object.fromEntries(rawTyped
