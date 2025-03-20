@@ -1,78 +1,31 @@
 <script setup lang="ts">
-import { computed, reactive, ref, type ComputedRef } from 'vue';
+import { reactive, watchEffect } from 'vue';
+import { armorKinds, getArmors, type ArmorKind } from '../scripts/api';
 
-import { type Armor, type ArmorInfo, type ArmorType, armorTypes, reduceSkills } from "../scripts/armor";
+const armors = await getArmors();
 
-const props = defineProps<{
-    data: ArmorInfo,
-}>();
+const armorSelected = reactive(Object.fromEntries(
+    armorKinds.map(kind => [kind, (localStorage.getItem(kind) ?? "")])
+) as Record<ArmorKind, string>);
 
-
-const armorSets = reactive(Object.fromEntries(
-    armorTypes.map(key => [key, ""])
-) as Record<ArmorType, string>);
-
-const armorRefs: ComputedRef<Record<ArmorType, Armor | undefined>> = computed(() => {
-    return Object.fromEntries(
-        Object.entries(armorSets).map(([type, id]) => {
-            return [
-                type,
-                props.data[id]
-            ];
-        })
-    ) as Record<ArmorType, Armor | undefined>;
-});
-
-const skills = computed(() => {
-    const skills = Object.values(armorRefs.value)
-        .filter(elem => elem !== undefined)
-        .map(armor => armor.skills)
-        .flat();
-
-    return reduceSkills(...skills);
-});
-
-const baseDamageS = ref("")
-const baseDamage = computed(() => {
-    const res = parseFloat(baseDamageS.value);
-    return isNaN(res) ? undefined : res;
-})
+for (const kind of armorKinds) {
+    watchEffect(() => {
+        localStorage.setItem(kind, armorSelected[kind]);
+    });
+}
 </script>
 
 <template>
-    <div class="inline-block">
-        Base damage:
-        <form>
-            <input v-model="baseDamageS" class="border-2 border-solid" type="text">
-        </form>
-    </div>
-
-    <div class="grid grid-cols-3 p-4 gap-2">
-        <template v-for="t of armorTypes">
-            <span>{{ t }}</span>
-
-            <select class="border-2 border-solid p-2" v-model="armorSets[t]">
-                <template v-for="armor, id of props.data">
-                    <option v-if="armor.type === t" :value="id">
+    <div class="m-10 grid grid-cols-2 gap-4">
+        <template v-for="kind of armorKinds">
+            <span>{{ kind }}</span>
+            <select class="border-black border-2 p-4" v-model="armorSelected[kind]">
+                <template v-for="armor of armors">
+                    <option v-if="armor.kind === kind">
                         {{ armor.name }}
                     </option>
                 </template>
             </select>
-
-            <div class="flex flex-col">
-                <span v-for="skill of (armorRefs[t]?.skills ?? [])">
-                    {{ skill.name }} {{ skill.level }}
-                </span>
-            </div>
         </template>
-    </div>
-
-    <div>
-         <span>Skills:</span>
-         <div v-for="level, skill of skills">
-            {{ skill }} {{ level }}
-         </div>
-
-        <div>Base damage: {{ baseDamage }}</div>
     </div>
 </template>

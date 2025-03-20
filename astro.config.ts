@@ -1,6 +1,8 @@
-import {defineConfig} from "astro/config"
+import { defineConfig } from "astro/config"
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@astrojs/vue';
+import { visualizer } from "rollup-plugin-visualizer";
+
 
 export default defineConfig({
     base: "/mh-app/",
@@ -12,7 +14,11 @@ export default defineConfig({
     },
     vite: {
         plugins: [
-            tailwindcss()
+            tailwindcss(),
+            visualizer({
+                emitFile: true,
+                filename: "stats.html",
+            })
         ]
     }
 })

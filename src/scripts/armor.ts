@@ -38,10 +38,49 @@ export type Armor = {
 
 export type ArmorInfo = Record<string, Armor>;
 
+
 export function reduceSkills(...skills: ArmorSkill[]): Record<string, number> {
     return skills.reduce((acc, skill) => {
         console.log(skill);
         acc[skill.name] = (acc[skill.name] ?? 0) + skill.level;
         return acc;
     }, {} as Record<string, number>);
+}
+
+export interface EfrOptions {
+    baseRawDamage: number,
+    baseCritChance: number,
+    skills: Record<string, number>,
+}
+
+export type EfrInfo = {
+    efr: number,
+    rawDamage: number,
+    critChance: number,
+    critMult: number,
+}
+
+const WEX = "Weakness Exploit";
+const AGI = "Agitator";
+
+export function efr(options: EfrOptions): EfrInfo {
+    let rawDamage = options.baseRawDamage;
+    let critChance = options.baseCritChance;
+    let critMult = 1.5;
+    if (options.skills[AGI] !== undefined) {
+        critChance += options.skills[AGI] * 5.0 / 100.0;
+    }
+
+    if (options.skills[WEX] !== undefined) {
+        critChance += options.skills[WEX] * 5.0 / 100.0;
+    }
+
+    const efr = rawDamage * (1.0 -  critChance) + rawDamage * critMult * critChance;
+
+    return {
+        efr,
+        rawDamage,
+        critChance,
+        critMult,
+    }
 }
