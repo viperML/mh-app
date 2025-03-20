@@ -71,7 +71,7 @@ const charmProjection: Projection<Charm> = {
 
 export async function getArmors(): Promise<ArmorPiece[]> {
     const pieces = async () => {
-        let url = new URL("https://wilds.mhdb.io/en/armor");
+        const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));
         url.searchParams.set("q", JSON.stringify({
             rank: "high",
@@ -88,7 +88,7 @@ export async function getArmors(): Promise<ArmorPiece[]> {
     };
 
 
-    let [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
+    const [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
 
     return piecesRes.concat(charmsRes.map(charm => {
         const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
