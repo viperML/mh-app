@@ -13,13 +13,21 @@ for (const kind of armorKinds) {
         localStorage.setItem(kind, armorSelected[kind]);
     });
 }
+
+function reset() {
+    localStorage.clear();
+    // Refresh window
+    window.location.reload();
+}
 </script>
 
 <template>
-    <div class="m-10 grid grid-cols-2 gap-4">
+    <div class="m-10 grid grid-cols-2 items-center gap-4">
         <template v-for="kind of armorKinds">
             <span>{{ kind }}</span>
             <select class="border-black border-2 p-4" v-model="armorSelected[kind]">
+                <option value="" disabled>Not selected</option>
+
                 <template v-for="armor of armors">
                     <option v-if="armor.kind === kind">
                         {{ armor.name }}
@@ -27,5 +35,9 @@ for (const kind of armorKinds) {
                 </template>
             </select>
         </template>
+    </div>
+
+    <div>
+        <button @click="reset" class="border-black border-2 p-4 hover:bg-gray-100">Reset</button>
     </div>
 </template>

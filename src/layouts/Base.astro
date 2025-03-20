@@ -14,3 +14,13 @@ import "../styles/main.css";
         </main>
     </body>
 </html>
+
+<script is:inline>
+// Check if prefers-color-scheme is dark
+const darkMode = window.matchMedia('(prefers-color-scheme: dark)');
+
+// If dark, set body class to dark
+if (darkMode.matches) {
+    document.body.classList.add('dark');
+}
+</script>
