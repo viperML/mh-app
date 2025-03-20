@@ -1,22 +1,39 @@
 // @ts-check
 
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginVue from 'eslint-plugin-vue'
+import eslint from "@eslint/js";
+import tseslint from "typescript-eslint";
+import pluginVue from "eslint-plugin-vue";
+import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
 
-export default tseslint.config(
-  eslint.configs.recommended,
-  tseslint.configs.strictTypeChecked,
-  {
-    rules: {
-      // "@typescript-eslint/explicit-function-return-type": "error"
+import globals from "globals";
+
+export default defineConfigWithVueTs(
+    {
+        ignores: [".astro/", "dist/"],
     },
-    languageOptions: {
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+    eslint.configs.recommended,
+    tseslint.configs.strictTypeChecked,
+    tseslint.configs.stylisticTypeChecked,
+    pluginVue.configs["flat/essential"],
+    vueTsConfigs.recommended,
+    {
+        rules: {
+            // "@typescript-eslint/explicit-function-return-type": "error"
+            "@typescript-eslint/consistent-type-definitions": "off",
+        },
+        languageOptions: {
+            parserOptions: {
+                // ecmaVersion: 2020,
+                // parser: tseslint.parser,
+                // sourceType: "module",
+                // projectService: true,
+                // tsconfigRootDir: import.meta.dirname,
+                // extraFileExtensions: ['.vue'],
+            },
+            globals: {
+                ...globals.browser,
+                ...globals.node,
+            },
+        },
     },
-  },
-  ...pluginVue.configs['flat/recommended'],
 );
