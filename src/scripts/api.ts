@@ -15,7 +15,7 @@ export interface ArmorPiece {
     slots: number[];
 }
 
-type Projection<T, Prefix extends string = ""> = {
+export type Projection<T, Prefix extends string = ""> = {
     [K in keyof T & string as T[K] extends (infer U)[]
         ? U extends object
             ? never
@@ -67,7 +67,7 @@ const charmProjection: Projection<Charm> = {
     "ranks.skills.level": true,
 };
 
-export async function getArmors(): Promise<ArmorPiece[]> {
+export async function getArmors(): Promise<Record<number, ArmorPiece>> {
     const pieces = async () => {
         const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));
@@ -90,21 +90,23 @@ export async function getArmors(): Promise<ArmorPiece[]> {
 
     const [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
 
-    return piecesRes
-        .concat(
-            charmsRes.map((charm) => {
-                const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
-                assert(highestRank !== undefined);
+    return Object.fromEntries(
+        piecesRes
+            .concat(
+                charmsRes.map((charm) => {
+                    const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
+                    assert(highestRank !== undefined);
 
-                return {
-                    name: highestRank.name,
-                    description: highestRank.description,
-                    id: charm.id,
-                    kind: "charm",
-                    skills: highestRank.skills,
-                    slots: [],
-                };
-            }),
-        )
-        .sort((a, b) => a.name.localeCompare(b.name));
+                    return {
+                        name: highestRank.name,
+                        description: highestRank.description,
+                        id: charm.id,
+                        kind: "charm",
+                        skills: highestRank.skills,
+                        slots: [],
+                    };
+                }),
+            )
+            .map((piece) => [piece.id, piece]),
+    );
 }
