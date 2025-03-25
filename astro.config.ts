@@ -4,7 +4,7 @@ import vue from "@astrojs/vue";
 import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
-    base: "/mh-app/",
+    base: import.meta.env.PROD ? "/mh-app/" : "/",
     integrations: [vue()],
     devToolbar: {
         enabled: false,

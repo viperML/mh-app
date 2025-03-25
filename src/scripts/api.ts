@@ -1,9 +1,10 @@
 import { assert } from "tsafe/assert";
+import type { Skill } from "./skill";
 
 export const armorKinds = ["head", "chest", "arms", "waist", "legs", "charm"] as const;
 export type ArmorKind = (typeof armorKinds)[number];
 
-export interface ArmorPiece {
+export interface RawArmorPiece {
     name: string;
     description: string;
     id: number;
@@ -12,6 +13,15 @@ export interface ArmorPiece {
         id: number;
         level: number;
     }[];
+    slots: number[];
+}
+
+export interface ArmorPiece {
+    name: string;
+    description: string;
+    id: number;
+    kind: ArmorKind;
+    skills: Skill[];
     slots: number[];
 }
 
@@ -33,7 +43,7 @@ export type Projection<T, Prefix extends string = ""> = {
           : never]: boolean;
 };
 
-export const armorProjection: Projection<ArmorPiece> = {
+export const armorProjection: Projection<RawArmorPiece> = {
     name: true,
     description: true,
     id: true,
@@ -67,7 +77,7 @@ const charmProjection: Projection<Charm> = {
     "ranks.skills.level": true,
 };
 
-export async function getArmors(): Promise<Record<number, ArmorPiece>> {
+export async function getArmors(skills: Record<number, Skill>): Promise<Record<number, ArmorPiece>> {
     const pieces = async () => {
         const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));
@@ -78,7 +88,7 @@ export async function getArmors(): Promise<Record<number, ArmorPiece>> {
             }),
         );
         const resp = await fetch(url);
-        return (await resp.json()) as ArmorPiece[];
+        return (await resp.json()) as RawArmorPiece[];
     };
 
     const charms = async () => {
@@ -90,23 +100,33 @@ export async function getArmors(): Promise<Record<number, ArmorPiece>> {
 
     const [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
 
-    return Object.fromEntries(
-        piecesRes
-            .concat(
-                charmsRes.map((charm) => {
-                    const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
-                    assert(highestRank !== undefined);
+    const allRawPieces = piecesRes.concat(
+        charmsRes.map((charm) => {
+            const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
+            assert(highestRank !== undefined);
 
-                    return {
-                        name: highestRank.name,
-                        description: highestRank.description,
-                        id: charm.id,
-                        kind: "charm",
-                        skills: highestRank.skills,
-                        slots: [],
-                    };
-                }),
-            )
-            .map((piece) => [piece.id, piece]),
+            return {
+                name: highestRank.name,
+                description: highestRank.description,
+                id: charm.id,
+                kind: "charm",
+                skills: [],
+                slots: [],
+            };
+        }),
     );
+
+    const allPieces = allRawPieces.map((piece) => {
+        const res: ArmorPiece = {
+            ...piece,
+            skills: piece.skills.map((skill) => {
+                const skillInstance = skills[skill.id];
+                assert(skillInstance !== undefined);
+                return skillInstance;
+            }),
+        };
+        return res;
+    });
+
+    return Object.fromEntries(allPieces.map((piece) => [piece.id, piece]));
 }

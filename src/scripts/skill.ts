@@ -24,18 +24,18 @@ const skillRawProjection: Projection<SkillRaw> = {
     "ranks.level": true,
 };
 
-export async function getSkills(): Promise<Record<number, SkillRaw>> {
+export async function getSkills(): Promise<Record<number, Skill>> {
     const url = new URL("https://wilds.mhdb.io/en/skills");
     url.searchParams.set("p", JSON.stringify(skillRawProjection));
 
     const resp = await fetch(url);
     const rawSkills = (await resp.json()) as SkillRaw[];
 
-    const entries = []
+    const entries: [number, Skill][] = []
     for (const rawSkill of rawSkills) {
         console.log(rawSkill);
         for (const rank of rawSkill.ranks) {
-            const ins: Skill = {
+            const ins = {
                 id: rank.id,
                 name: rawSkill.name,
                 level: rank.level,

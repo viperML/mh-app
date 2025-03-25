@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { reactive, watchEffect } from "vue";
 import { armorKinds, getArmors, type ArmorKind } from "../scripts/api";
-import { getSkills } from "../scripts/skills";
+import { getSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
 
-const [armors, skills] = await Promise.all([getArmors(), getSkills()]);
-console.log(skills);
+const skills = await getSkills();
+const armors = await getArmors(skills);
 
 const armorSelected = reactive(
     Object.fromEntries(armorKinds.map((kind) => [kind, localStorage.getItem(kind) ?? undefined])) as Record<
@@ -58,7 +58,7 @@ function setArmor(kind: ArmorKind, event: Event) {
                 Skills:
                 <template v-if="armorSelected[kind] !== undefined">
                     <div v-for="skill of armors[armorSelected[kind]]!.skills" :key="skill.id">
-                        {{ skills[skill.id]?.name ?? skill.id }} {{ skill.level }}
+                        {{ skill.name }} {{ skill.level }}
                     </div>
                 </template>
             </div>
