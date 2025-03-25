@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[` 1`] = `
+{
+  "affinity": 0,
+  "attack": 100,
+  "efr": 100,
+}
+`;
+
+exports[`Agitator 5 1`] = `
+{
+  "affinity": 0.15,
+  "attack": 120,
+  "efr": 124.5,
+}
+`;
+
+exports[`Weakness Exploit 5 1`] = `
+{
+  "affinity": 0.3,
+  "attack": 100,
+  "efr": 107.5,
+}
+`;

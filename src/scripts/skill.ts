@@ -6,6 +6,8 @@ export interface Skill {
     level: number,
 }
 
+export type MergedSkills = Record<string, number>;
+
 interface SkillRaw {
     id: number;
     name: string;
@@ -45,4 +47,17 @@ export async function getSkills(): Promise<Record<number, Skill>> {
     }
 
     return Object.fromEntries(entries);
+}
+
+export function mergeSkills(skills: Skill[]): MergedSkills {
+    const merged: MergedSkills = {};
+
+    for (const skill of skills) {
+        if (merged[skill.name] === undefined) {
+            merged[skill.name] = 0;
+        }
+        (merged[skill.name] as number) += skill.level;
+    }
+
+    return merged;
 }
