@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect } from "vue";
-import { armorKinds, getArmors, type ArmorKind } from "../scripts/api";
+import { computed, reactive, ref, watchEffect, type ComputedRef } from "vue";
+import { armorKinds, getArmors, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import { getSkills, mergeSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
 import { assert } from "tsafe/assert";
@@ -9,16 +9,25 @@ import { efr } from "../scripts/efr";
 const skills = await getSkills();
 const armors = await getArmors(skills);
 
-const armorSelected = reactive(
+const selectedArmorId = reactive(
     Object.fromEntries(armorKinds.map(kind => [kind, localStorage.getItem(kind) ?? undefined])) as Record<
         ArmorKind,
         number | undefined
     >,
 );
 
+const selectedArmor = computed(() => {
+    return Object.fromEntries(
+        armorKinds.map(kind => {
+            const id = selectedArmorId[kind];
+            return [kind, id ? armors[id] : undefined];
+        }),
+    ) as Record<ArmorKind, ArmorPiece | undefined>;
+});
+
 for (const kind of armorKinds) {
     watchEffect(() => {
-        const selected = armorSelected[kind];
+        const selected = selectedArmorId[kind];
         if (selected !== undefined) {
             console.log(`${kind} => ${selected.toString()}`);
             localStorage.setItem(kind, selected.toString());
@@ -36,22 +45,16 @@ function setArmor(kind: ArmorKind, event: Event) {
         return;
     }
     const value = (event.target as HTMLInputElement).value;
-    armorSelected[kind] = parseInt2(value);
+    selectedArmorId[kind] = parseInt2(value);
 }
 
 const allSkills = computed(() => {
-    // Get the skill for every armorSelected if not undefined
-    const res = armorKinds
-        .map(kind => armorSelected[kind])
-        .filter(id => id !== undefined)
-        .map(id => {
-            const armor = armors[id];
-            assert(armor);
-            return armor.skills;
-        })
-        .flat();
-
-    return mergeSkills(res);
+    return mergeSkills(
+        armorKinds
+            .map(kind => selectedArmor.value[kind]?.skills)
+            .filter(s => s !== undefined)
+            .flat(),
+    );
 });
 
 const attack = ref(200);
@@ -60,8 +63,8 @@ const myEfr = computed(() => {
     return efr({
         attack: attack.value,
         affinity: 0,
-        skills: allSkills.value
-    })
+        skills: allSkills.value,
+    });
 });
 </script>
 
@@ -76,7 +79,7 @@ const myEfr = computed(() => {
             <span>{{ kind }}</span>
             <select
                 class="border-black border-2 p-4"
-                :value="armorSelected[kind]"
+                :value="selectedArmorId[kind]"
                 @change="event => setArmor(kind, event)"
             >
                 <template v-for="(armor, id) of armors" v-bind:key="id">
@@ -88,8 +91,8 @@ const myEfr = computed(() => {
 
             <div>
                 Skills:
-                <template v-if="armorSelected[kind] !== undefined">
-                    <div v-for="skill of armors[armorSelected[kind]]!.skills" :key="skill.id">
+                <template v-if="selectedArmorId[kind] !== undefined">
+                    <div v-for="skill of armors[selectedArmorId[kind]]!.skills" :key="skill.id">
                         {{ skill.name }} {{ skill.level }}
                     </div>
                 </template>
@@ -106,9 +109,7 @@ const myEfr = computed(() => {
         <p>Affinity: {{ myEfr.affinity }}</p>
         <p>
             Skills:
-            <span class="block" v-for="value, name of allSkills" v-bind:key="name">
-                {{ name }}: {{ value }}
-            </span>
+            <span class="block" v-for="(value, name) of allSkills" v-bind:key="name"> {{ name }}: {{ value }} </span>
         </p>
     </div>
 </template>
