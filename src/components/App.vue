@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect, type ComputedRef } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import { armorKinds, getArmors, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import { getSkills, mergeSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
-import { assert } from "tsafe/assert";
 import { efr } from "../scripts/efr";
 
 const skills = await getSkills();

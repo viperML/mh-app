@@ -1,8 +1,8 @@
 import { assert } from "tsafe/assert";
 import type { Skill } from "./skill";
 
-export const armorKinds = ["head", "chest", "arms", "waist", "legs", "charm"] as const;
-export type ArmorKind = (typeof armorKinds)[number];
+export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
+export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
 
 export interface RawArmorPiece {
     name: string;

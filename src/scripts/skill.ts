@@ -1,22 +1,22 @@
 import type { Projection } from "./api";
 
 export interface Skill {
-    id: number,
-    name: string,
-    level: number,
+    id: number;
+    name: string;
+    level: number;
 }
 
-export type MergedSkills = Record<string, number>;
+export type MergedSkills = Map<string, number>;
 
 interface SkillRaw {
     id: number;
     name: string;
-    ranks: SkillRank[],
+    ranks: SkillRank[];
 }
 
 interface SkillRank {
-    id: number,
-    level: number,
+    id: number;
+    level: number;
 }
 
 const skillRawProjection: Projection<SkillRaw> = {
@@ -33,15 +33,15 @@ export async function getSkills(): Promise<Record<number, Skill>> {
     const resp = await fetch(url);
     const rawSkills = (await resp.json()) as SkillRaw[];
 
-    const entries: [number, Skill][] = []
+    const entries: [number, Skill][] = [];
     for (const rawSkill of rawSkills) {
-        console.log(rawSkill);
+        // console.log(rawSkill);
         for (const rank of rawSkill.ranks) {
             const ins = {
                 id: rank.id,
                 name: rawSkill.name,
                 level: rank.level,
-            }
+            };
             entries.push([rank.id, ins]);
         }
     }
@@ -50,13 +50,20 @@ export async function getSkills(): Promise<Record<number, Skill>> {
 }
 
 export function mergeSkills(skills: Skill[]): MergedSkills {
-    const merged: MergedSkills = {};
+    const merged: MergedSkills = new Map();
 
     for (const skill of skills) {
-        if (merged[skill.name] === undefined) {
-            merged[skill.name] = 0;
+        // if (merged[skill.name] === undefined) {
+        //     merged[skill.name] = 0;
+        // }
+        // (merged[skill.name] as number) += skill.level;
+
+        const prev = merged.get(skill.name);
+        if (prev === undefined) {
+            merged.set(skill.name, skill.level);
+        } else {
+            merged.set(skill.name, prev + skill.level);
         }
-        (merged[skill.name] as number) += skill.level;
     }
 
     return merged;

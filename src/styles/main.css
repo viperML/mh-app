@@ -1,3 +1,13 @@
 @import "tailwindcss";
+@import "@fontsource/inter";
 
-@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    font-family: "Inter", system-ui;
+    background-color: #121212;
+    color: white;
+}
+
+a:hover {
+    text-decoration: underline;
+}
