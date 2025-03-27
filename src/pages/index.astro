@@ -1,13 +1,8 @@
 ---
-import Base from "../layouts/Base.astro"
+import Base from "../layouts/Base.astro";
 import App from "../components/App.vue";
 ---
+
 <Base>
-    <h1 class="text-xl">mh-app v2</h1>
-
-    <App
-        client:only="vue"
-    />
-
-
+    <App client:only="vue" />
 </Base>

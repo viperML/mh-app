@@ -68,47 +68,58 @@ const myEfr = computed(() => {
 </script>
 
 <template>
-    <div>
-        <h2>Attack:</h2>
-        <input class="border-black border-2 p-2" v-model="attack" />
-    </div>
+    <div class="grid grid-cols-[600px_auto] gap-4 p-10">
+        <div class="bg-zinc-900 p-4 rounded-md flex flex-col gap-2">
+            <h2 class="font-black">Equipment</h2>
 
-    <div class="m-10 grid grid-cols-3 items-center gap-4">
-        <template v-for="kind of armorKinds" v-bind:key="kind">
-            <span>{{ kind }}</span>
-            <select
-                class="border-black border-2 p-4"
-                :value="selectedArmorId[kind]"
-                @change="event => setArmor(kind, event)"
-            >
-                <template v-for="(armor, id) of armors" v-bind:key="id">
-                    <option v-if="armor.kind === kind" :value="id">
-                        {{ armor.name }}
-                    </option>
-                </template>
-            </select>
+            <div class="grid grid-cols-[auto_auto_auto] items-center gap-4">
+                <template v-for="kind of armorKinds" v-bind:key="kind">
+                    <span class="capitalize text-zinc-400">{{ kind }}</span>
+                    <select
+                        class="border-zinc-800 border-1 p-1 rounded-sm"
+                        :value="selectedArmorId[kind]"
+                        @change="event => setArmor(kind, event)"
+                    >
+                        <template v-for="(armor, id) of armors" v-bind:key="id">
+                            <option v-if="armor.kind === kind" :value="id">
+                                {{ armor.name }}
+                            </option>
+                        </template>
+                    </select>
 
-            <div>
-                Skills:
-                <template v-if="selectedArmorId[kind] !== undefined">
-                    <div v-for="skill of armors[selectedArmorId[kind]]!.skills" :key="skill.id">
-                        {{ skill.name }} {{ skill.level }}
+                    <div>
+                        Skills:
+                        <template v-if="selectedArmorId[kind] !== undefined">
+                            <div v-for="skill of armors[selectedArmorId[kind]]!.skills" :key="skill.id">
+                                {{ skill.name }} {{ skill.level }}
+                            </div>
+                        </template>
                     </div>
                 </template>
             </div>
-        </template>
-    </div>
+        </div>
 
-    <div>
-        <button @click="reset" class="border-black border-2 p-4 hover:bg-gray-100">Reset</button>
-    </div>
+        <div class="bg-zinc-900 p-4 rounded-md flex flex-col gap-2">
+            <h2 class="font-black">Stats</h2>
+            <div class="flex flex-row items-center justify-between gap-2">
+                <h3 class="text-zinc-400">Attack:</h3>
+                <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model="attack" />
+            </div>
+        </div>
 
-    <div>
-        <p>EFR: {{ myEfr.efr }}</p>
-        <p>Affinity: {{ myEfr.affinity }}</p>
-        <p>
-            Skills:
-            <span class="block" v-for="(value, name) of allSkills" v-bind:key="name"> {{ name }}: {{ value }} </span>
-        </p>
+        <!-- <div>
+            <button @click="reset" class="border-black border-2 p-4 hover:bg-gray-100">Reset</button>
+        </div> -->
+
+        <div>
+            <p>EFR: {{ myEfr.efr }}</p>
+            <p>Affinity: {{ myEfr.affinity }}</p>
+            <p>
+                Skills:
+                <span class="block" v-for="(value, name) of allSkills" v-bind:key="name">
+                    {{ name }}: {{ value }}
+                </span>
+            </p>
+        </div>
     </div>
 </template>
