@@ -77,7 +77,7 @@ const charmProjection: Projection<Charm> = {
     "ranks.skills.level": true,
 };
 
-export async function getArmors(skills: Record<number, Skill>): Promise<Record<number, ArmorPiece>> {
+export async function getArmors(skills: Map<number, Skill>): Promise<Map<number, ArmorPiece>> {
     const pieces = async () => {
         const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));
@@ -120,13 +120,13 @@ export async function getArmors(skills: Record<number, Skill>): Promise<Record<n
         const res: ArmorPiece = {
             ...piece,
             skills: piece.skills.map((skill) => {
-                const skillInstance = skills[skill.id];
-                assert(skillInstance !== undefined);
+                const skillInstance = skills.get(skill.id);
+                assert(skillInstance);
                 return skillInstance;
             }),
         };
         return res;
     });
 
-    return Object.fromEntries(allPieces.map((piece) => [piece.id, piece]));
+    return new Map(allPieces.map(piece => [piece.id, piece]));
 }
