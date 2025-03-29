@@ -34,11 +34,6 @@ for (const kind of armorKinds) {
     });
 }
 
-function reset() {
-    localStorage.clear();
-    window.location.reload();
-}
-
 function setArmor(kind: ArmorKind, event: Event) {
     if (event.target === null) {
         return;
@@ -101,25 +96,19 @@ const myEfr = computed(() => {
 
         <div class="bg-zinc-900 p-4 rounded-md flex flex-col gap-2">
             <h2 class="font-black">Stats</h2>
-            <div class="flex flex-row items-center justify-between gap-2">
+            <div class="grid grid-cols-2 items-center justify-items-center gap-y-3 gap-x-2">
                 <h3 class="text-zinc-400">Attack:</h3>
                 <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model="attack" />
+
+                <h3 class="text-zinc-400">EFR:</h3>
+                <span>{{ myEfr.efr }}</span>
+
+                <h3 class="text-zinc-400 col-span-2">Skills:</h3>
+                <template v-for="[name, value] of allSkills" v-bind:key="name">
+                    <span>{{ name }}</span>
+                    <span>{{ value }}</span>
+                </template>
             </div>
-        </div>
-
-        <!-- <div>
-            <button @click="reset" class="border-black border-2 p-4 hover:bg-gray-100">Reset</button>
-        </div> -->
-
-        <div>
-            <p>EFR: {{ myEfr.efr }}</p>
-            <p>Affinity: {{ myEfr.affinity }}</p>
-            <p>
-                Skills:
-                <span class="block" v-for="(value, name) of allSkills" v-bind:key="name">
-                    {{ name }}: {{ value }}
-                </span>
-            </p>
         </div>
     </div>
 </template>

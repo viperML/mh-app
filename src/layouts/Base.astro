@@ -47,6 +47,9 @@ import "../styles/main.css";
                 &
                 <a href="https://astro.build/" rel="external" target="_blank">Astro</a>
             </div>
+            <div>
+                <button id="reset">Reset Page</button>
+            </div>
         </footer>
     </body>
 </html>
@@ -73,9 +76,27 @@ import "../styles/main.css";
 
     footer {
         display: flex;
+        flex-direction: column;
+        gap: 10px;
         justify-content: center;
         align-items: center;
         padding: 20px;
         color: rgb(73, 73, 73);
     }
+
+    footer button {
+        text-decoration: underline;
+        cursor: pointer;
+    }
 </style>
+
+<script>
+    import { assert } from "tsafe/assert";
+    const resetButton = document.querySelector("#reset");
+    assert(resetButton);
+
+    resetButton.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.reload();
+    });
+</script>
