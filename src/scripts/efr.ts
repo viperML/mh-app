@@ -4,7 +4,7 @@ import type { MergedSkills } from "./skill";
 export interface baseEFR {
     attack: number;
     affinity: number;
-    skills: MergedSkills,
+    skills: MergedSkills;
 }
 
 export type EfrInfo = {
@@ -24,7 +24,7 @@ export function efr(base: baseEFR): EfrInfo {
     const agitator = base.skills.get("Agitator");
     if (agitator !== undefined) {
         assert(agitator <= 5 && agitator >= 1);
-        attack += agitator* 4;
+        attack += agitator * 4;
         affinity += ([3, 5, 7, 10, 15][agitator - 1] as number) / 100;
     }
 
@@ -61,7 +61,7 @@ export function efr(base: baseEFR): EfrInfo {
     const critical_eye = base.skills.get("Critical Eye");
     if (critical_eye !== undefined) {
         assert(critical_eye <= 5 && critical_eye >= 1);
-        affinity += critical_eye * 4;
+        affinity += (critical_eye * 4) / 100;
     }
 
     const critical_boost = base.skills.get("Critical Boost");
@@ -72,7 +72,7 @@ export function efr(base: baseEFR): EfrInfo {
 
     const max_might = base.skills.get("Maximum Might");
     if (max_might !== undefined) {
-        assert(max_might >= 1 && max_might <=3);
+        assert(max_might >= 1 && max_might <= 3);
         affinity += max_might / 10;
     }
 
@@ -80,7 +80,7 @@ export function efr(base: baseEFR): EfrInfo {
     attack = attack * (1 + attack_multiplier);
 
     // Calculate EFR
-    const res = attack * (1 - affinity) + attack * affinity * (1 + critical_multiplier/100);
+    const res = attack * (1 - affinity) + attack * affinity * (1 + critical_multiplier / 100);
 
     return {
         efr: res,

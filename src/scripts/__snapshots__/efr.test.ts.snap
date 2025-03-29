@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[` 1`] = `
+exports[`Skills:  1`] = `
 {
   "affinity": 0,
   "attack": 100,
@@ -8,7 +8,7 @@ exports[` 1`] = `
 }
 `;
 
-exports[`Agitator 5 1`] = `
+exports[`Skills: Agitator 5 1`] = `
 {
   "affinity": 0.15,
   "attack": 120,
@@ -16,10 +16,25 @@ exports[`Agitator 5 1`] = `
 }
 `;
 
-exports[`Weakness Exploit 5 1`] = `
+exports[`Skills: Critical Eye 5 1`] = `
+{
+  "affinity": 0.2,
+  "attack": 100,
+  "efr": 105,
+}
+`;
+
+exports[`Skills: Weakness Exploit 5 1`] = `
 {
   "affinity": 0.3,
   "attack": 100,
   "efr": 107.5,
+}
+`;
+
+exports[`merge skills 1`] = `
+Map {
+  "Agitator" => 5,
+  "Weakness Exploit" => 3,
 }
 `;

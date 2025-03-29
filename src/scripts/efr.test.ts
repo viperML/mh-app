@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { efr, type EfrInfo } from "./efr";
+import { efr } from "./efr";
 import { mergeSkills, type Skill } from "./skill";
 
 test("merge skills", () => {
@@ -15,67 +15,50 @@ test("merge skills", () => {
                 name: "Agitator",
                 level: 2,
             },
+            {
+                id: 0,
+                name: "Weakness Exploit",
+                level: 3,
+            }
         ]),
-    ).toEqual({
-        Agitator: 5,
-    });
+    ).toMatchSnapshot();
 });
 
-interface TestSkill {
-    skills: Skill[];
-    expect: EfrInfo;
-}
-
-function testSkill(input: TestSkill) {
+function testSkill(skills: Skill[]) {
     // Create a test name from all the skills
-    const name = input.skills.map(skill => `${skill.name} ${skill.level.toString()}`).join("+");
+    const name = skills.map(skill => `${skill.name} ${skill.level.toString()}`).join("+");
 
-    test(name, () => {
+    test(`Skills: ${name}`, () => {
         expect(
             efr({
                 attack: 100,
                 affinity: 0,
-                skills: mergeSkills(input.skills),
+                skills: mergeSkills(skills),
             }),
         ).toMatchSnapshot();
     });
 }
 
-testSkill({
-    skills: [],
-    expect: {
-        efr: 100,
-        attack: 100,
-        affinity: 0,
-    },
-});
+testSkill([]);
 
-testSkill({
-    skills: [
-        {
-            id: 0,
-            name: "Agitator",
-            level: 5,
-        },
-    ],
-    expect: {
-        efr: 0,
-        attack: 120,
-        affinity: 0.15,
+testSkill([
+    {
+        id: 0,
+        name: "Agitator",
+        level: 5,
     },
-});
+]);
 
-testSkill({
-    skills: [
-        {
-            id: 0,
-            name: "Weakness Exploit",
-            level: 5,
-        },
-    ],
-    expect: {
-        efr: 0,
-        attack: 100,
-        affinity: 0.3,
+testSkill([
+    {
+        id: 0,
+        name: "Weakness Exploit",
+        level: 5,
     },
-});
+]);
+
+testSkill([{
+    id: 0,
+    name: "Critical Eye",
+    level: 5,
+}])
