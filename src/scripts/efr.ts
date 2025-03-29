@@ -70,6 +70,12 @@ export function efr(base: baseEFR): EfrInfo {
         critical_multiplier = ([28, 31, 34, 37, 40][critical_boost] as number) / 100;
     }
 
+    const max_might = base.skills.get("Maximum Might");
+    if (max_might !== undefined) {
+        assert(max_might >= 1 && max_might <=3);
+        affinity += max_might / 10;
+    }
+
     // Apply attack multiplier
     attack = attack * (1 + attack_multiplier);
 

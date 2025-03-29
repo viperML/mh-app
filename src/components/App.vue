@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect, type Reactive } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import { armorKinds, getArmors, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import { getSkills, mergeSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
@@ -64,7 +64,7 @@ watchEffect(() => {
 const myEfr = computed(() =>
     efr({
         attack: attack.value,
-        affinity: affinity.value,
+        affinity: affinity.value / 100,
         skills: allSkills.value,
     }),
 );
@@ -106,12 +106,14 @@ const myEfr = computed(() =>
             <h2 class="font-black">Stats</h2>
             <div class="grid grid-cols-2 items-center justify-items-center gap-y-3 gap-x-2">
                 <h3 class="text-zinc-400">Attack:</h3>
-                <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model="attack" />
+                <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model.number="attack" />
                 <h3 class="text-zinc-400">Affinity:</h3>
-                <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model="affinity" />
+                <input class="border-zinc-800 border-1 p-1 rounded-sm text-center w-14" v-model.number="affinity" />
 
                 <h3 class="text-zinc-400">EFR:</h3>
                 <span>{{ myEfr.efr }}</span>
+                <h3 class="text-zinc-400">Affinity:</h3>
+                <span>{{ myEfr.affinity * 100 }}%</span>
 
                 <h3 class="text-zinc-400 col-span-2">Skills:</h3>
                 <template v-for="[name, value] of allSkills" v-bind:key="name">

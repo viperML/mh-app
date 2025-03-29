@@ -110,7 +110,7 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
                 description: highestRank.description,
                 id: charm.id,
                 kind: "charm",
-                skills: [],
+                skills: highestRank.skills,
                 slots: [],
             };
         }),
