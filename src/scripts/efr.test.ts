@@ -19,7 +19,7 @@ test("merge skills", () => {
                 id: 0,
                 name: "Weakness Exploit",
                 level: 3,
-            }
+            },
         ]),
     ).toMatchSnapshot();
 });
@@ -57,8 +57,10 @@ testSkill([
     },
 ]);
 
-testSkill([{
-    id: 0,
-    name: "Critical Eye",
-    level: 5,
-}])
+testSkill([
+    {
+        id: 0,
+        name: "Critical Eye",
+        level: 5,
+    },
+]);
