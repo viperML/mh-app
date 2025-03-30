@@ -14,7 +14,7 @@ interface SkillRaw {
     ranks: SkillRank[];
 }
 
-interface SkillRank {
+export interface SkillRank {
     id: number;
     level: number;
 }

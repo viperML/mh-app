@@ -5,9 +5,12 @@ import { getSkills, mergeSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
 import { efr } from "../scripts/efr";
 import { assert } from "tsafe/assert";
+import { getDecorations } from "../scripts/decorations";
 
 const skills = await getSkills();
-const armors = await getArmors(skills);
+// const armors = await getArmors(skills);
+const [armors, decorations] = await Promise.all([getArmors(skills), getDecorations(skills)]);
+console.log(decorations)
 
 const selectedArmor: Record<ArmorKind, ArmorPiece | undefined> = reactive(
     Object.fromEntries(
