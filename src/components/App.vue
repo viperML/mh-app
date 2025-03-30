@@ -46,7 +46,7 @@ const allSkills = computed(() => {
 });
 
 watchEffect(() => {
-    console.log(allSkills.value);
+    console.log("allSkills", allSkills.value);
 });
 
 const attack = ref(parseInt2(localStorage.getItem("attack") ?? "") ?? 200);
@@ -68,18 +68,27 @@ const myEfr = computed(() =>
         skills: allSkills.value,
     }),
 );
+
+const worker = new Worker(new URL("../scripts/worker.ts", import.meta.url), { type: "module" });
+worker.addEventListener("message", event => {
+    console.log("Worker said:", event.data);
+});
+function optimize() {
+    console.log("pinging worker");
+    worker.postMessage("ping");
+}
 </script>
 
 <template>
-    <div class="grid grid-cols-[600px_auto] gap-4 p-10">
-        <div class="bg-zinc-900 p-4 rounded-md flex flex-col gap-2">
-            <h2 class="font-black">Equipment</h2>
+    <div class="grid grid-cols-2 gap-4 p-10">
+        <div class="bg-zinc-900 p-3 rounded-xl flex flex-col gap-2">
+            <h2 class="font-black">Armor</h2>
 
-            <div class="grid grid-cols-[auto_auto_auto] items-center gap-4">
-                <template v-for="kind of armorKinds" v-bind:key="kind">
-                    <span class="capitalize text-zinc-400">{{ kind }}</span>
+            <div class="grid grid-cols-1 items-center gap-2">
+                <div v-for="kind of armorKinds" v-bind:key="kind" class="border-1 border-zinc-700 bg-zinc-800 p-1 rounded-lg grid gap-2 grid-cols-2">
+
                     <select
-                        class="border-zinc-800 border-1 p-1 rounded-sm"
+                        class="border-zinc-700 border-1 p-1 rounded-sm font-medium"
                         :value="selectedArmor[kind]?.id"
                         @change="event => setArmor(kind, event)"
                     >
@@ -90,15 +99,20 @@ const myEfr = computed(() =>
                         </template>
                     </select>
 
-                    <div>
-                        Skills:
+                    <div class="grid col-2 row-span-2 gap-0.5">
+                        <div v-for="slot of [1,2,3]" v-bind:key="slot" class="border-1 border-zinc-700 p-0.5 rounded-sm text-sm text-zinc-400">
+                            Slot {{ slot }}
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row text-xs gap-2 text-zinc-500 px-1">
                         <template v-if="selectedArmor[kind] !== undefined">
-                            <div v-for="skill of selectedArmor[kind].skills" :key="skill.id">
+                            <span v-for="skill of selectedArmor[kind].skills" :key="skill.id">
                                 {{ skill.name }} {{ skill.level }}
-                            </div>
+                            </span>
                         </template>
                     </div>
-                </template>
+                </div>
             </div>
         </div>
 
@@ -121,6 +135,10 @@ const myEfr = computed(() =>
                     <span>{{ value }}</span>
                 </template>
             </div>
+        </div>
+
+        <div>
+            <button class="bg-zinc-800 hover:bg-zinc-500 p-3 rounded-md" @click="optimize">Optimize</button>
         </div>
     </div>
 </template>

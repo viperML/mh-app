@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" source("../../src");
 @import "@fontsource/inter";
 
 :root {
@@ -9,6 +9,11 @@
     --color-text-hover: #f1f1f1;
 }
 
-a {
-    text-decoration: underline;
+option {
+    /* color: black; */
+    background-color: #121212;
+}
+
+button {
+    cursor: pointer;
 }
