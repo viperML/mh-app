@@ -103,8 +103,15 @@ function optimize() {
                     </select>
 
                     <div class="grid col-2 row-span-2 gap-0.5">
-                        <div v-for="slot of [1,2,3]" v-bind:key="slot" class="border-1 border-zinc-700 p-0.5 rounded-sm text-sm text-zinc-400">
-                            Slot {{ slot }}
+                        <div v-for="slotSize of selectedArmor[kind]?.slots" v-bind:key="slotSize" class="border-1 border-zinc-700 p-0.5 rounded-sm text-sm text-zinc-400">
+                            <span>S{{ slotSize }}</span>
+                            <select class="border-zinc-700">
+                                <template v-for="[id, deco] of decorations" v-bind:key="id">
+                                    <option v-if="deco.kind === 'armor' && deco.slot <= slotSize" :value="id">
+                                        {{ deco.name }} @ S{{ deco.slot }}
+                                    </option>
+                                </template>
+                            </select>
                         </div>
                     </div>
 
@@ -138,10 +145,6 @@ function optimize() {
                     <span>{{ value }}</span>
                 </template>
             </div>
-        </div>
-
-        <div>
-            <button class="bg-zinc-800 hover:bg-zinc-500 p-3 rounded-md" @click="optimize">Optimize</button>
         </div>
     </div>
 </template>
