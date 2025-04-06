@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, toRaw, watchEffect, type Reactive } from "vue";
 import { armorKinds, getArmors, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import { getSkills, mergeSkills } from "../scripts/skill";
 import { parseInt2 } from "../scripts/util";
 import { efr } from "../scripts/efr";
-import { assert } from "tsafe/assert";
-import { getDecorations } from "../scripts/decorations";
+import { assert, type Equals } from "tsafe/assert";
+import { getDecorations, type Decoration } from "../scripts/decorations";
 
 const skills = await getSkills();
 // const armors = await getArmors(skills);
 const [armors, decorations] = await Promise.all([getArmors(skills), getDecorations(skills)]);
-console.log(decorations)
 
 const selectedArmor: Record<ArmorKind, ArmorPiece | undefined> = reactive(
     Object.fromEntries(
@@ -37,6 +36,13 @@ function setArmor(kind: ArmorKind, event: Event) {
     const id = parseInt2((event.target as HTMLInputElement).value);
     assert(id);
     selectedArmor[kind] = armors.get(id);
+    // pruneDecorations(kind);
+
+    // for (const elem of document.querySelectorAll(`.select-decoration-${kind}`)) {
+    //     const _elem = elem as HTMLSelectElement;
+    //     console.log(_elem);
+    //     _elem.dispatchEvent(new Event("change"));
+    // }
 }
 
 const allSkills = computed(() => {
@@ -48,9 +54,9 @@ const allSkills = computed(() => {
     );
 });
 
-watchEffect(() => {
-    console.log("allSkills", allSkills.value);
-});
+// watchEffect(() => {
+//     console.log("allSkills", allSkills.value);
+// });
 
 const attack = ref(parseInt2(localStorage.getItem("attack") ?? "") ?? 200);
 watchEffect(() => {
@@ -80,16 +86,87 @@ function optimize() {
     console.log("pinging worker");
     worker.postMessage("ping");
 }
+
+type DecorationIndex = 0 | 1 | 2;
+const decorationIndeces: DecorationIndex[] = [0, 1, 2];
+
+const selectedDecoration = reactive(
+    Object.fromEntries(
+        armorKinds.map(kind => {
+            const decos = {
+                0: undefined,
+                1: undefined,
+                2: undefined,
+            };
+            return [kind, decos];
+        }),
+    ),
+) as Reactive<Record<ArmorKind, Record<DecorationIndex, Decoration | undefined>>>;
+
+function pruneDecorations(kind: ArmorKind) {
+    const armor = selectedArmor[kind];
+    if (armor === undefined) {
+        return;
+    }
+
+    const slots = armor.slots;
+    for (const index of decorationIndeces) {
+        const deco = selectedDecoration[kind][index];
+        if (deco === undefined) {
+            continue;
+        }
+        if (!showDecoration(kind, index, deco)) {
+            selectedDecoration[kind][index] = undefined;
+        }
+    }
+
+    console.log(toRaw(selectedDecoration[kind]));
+}
+
+function setDecoration(kind: ArmorKind, index: DecorationIndex, event: Event) {
+    console.log("Changing decorations");
+    if (event.target === null) {
+        return;
+    }
+    const id = parseInt2((event.target as HTMLSelectElement).value);
+    assert(id);
+    selectedDecoration[kind][index] = decorations.get(id);
+    // pruneDecorations(kind);
+}
+
+function showDecoration(kind: ArmorKind, slotIndex: DecorationIndex, decoration: Decoration) {
+    const armor = selectedArmor[kind];
+    if (armor === undefined) {
+        return false;
+    }
+
+    const slot = armor.slots[slotIndex];
+    if (slot === undefined) {
+        return false;
+    }
+
+    return decoration.slot <= slot;
+}
+
+function dumpState() {
+    console.log(toRaw(selectedArmor));
+    console.log(toRaw(selectedDecoration));
+}
 </script>
 
 <template>
-    <div class="grid grid-cols-2 gap-4 p-10">
-        <div class="bg-zinc-900 p-3 rounded-xl flex flex-col gap-2">
-            <h2 class="font-black">Armor</h2>
+    <div class="grid grid-cols-1 gap-4 p-10">
+        <section class="bg-zinc-900 p-3 rounded-xl flex flex-col gap-2">
+            <header>
+                <h2 class="font-black pl-1">Armor</h2>
+            </header>
 
             <div class="grid grid-cols-1 items-center gap-2">
-                <div v-for="kind of armorKinds" v-bind:key="kind" class="border-1 border-zinc-700 bg-zinc-800 p-1 rounded-lg grid gap-2 grid-cols-2">
-
+                <div
+                    v-for="kind of armorKinds"
+                    v-bind:key="kind"
+                    class="border-1 border-zinc-700 bg-zinc-800 p-1 rounded-lg grid gap-2 grid-cols-2"
+                >
                     <select
                         class="border-zinc-700 border-1 p-1 rounded-sm font-medium"
                         :value="selectedArmor[kind]?.id"
@@ -102,18 +179,25 @@ function optimize() {
                         </template>
                     </select>
 
-                    <div class="grid col-2 row-span-2 gap-0.5">
-                        <div v-for="slotSize of selectedArmor[kind]?.slots" v-bind:key="slotSize" class="border-1 border-zinc-700 p-0.5 rounded-sm text-sm text-zinc-400">
-                            <span>S{{ slotSize }}</span>
-                            <select class="border-zinc-700">
-                                <template v-for="[id, deco] of decorations" v-bind:key="id">
-                                    <option v-if="deco.kind === 'armor' && deco.slot <= slotSize" :value="id">
-                                        {{ deco.name }} @ S{{ deco.slot }}
-                                    </option>
-                                </template>
-                            </select>
-                        </div>
-                    </div>
+                    <article class="grid col-2 row-span-2 gap-0.5">
+                        <select
+                            :class="`select-decoration-${kind}`"
+                            v-for="slotIndex of decorationIndeces"
+                            v-bind:key="slotIndex"
+                            @change="e => setDecoration(kind, slotIndex, e)"
+                            v-show="selectedArmor[kind]?.slots[slotIndex]"
+                        >
+                            <option class="text-zinc-600" :value="undefined">Select a decoration</option>
+                            <template v-for="[id, deco] of decorations" v-bind:key="id">
+                                <option
+                                    v-if="deco.kind === 'armor' && showDecoration(kind, slotIndex, deco)"
+                                    :value="id"
+                                >
+                                    {{ deco.name }}
+                                </option>
+                            </template>
+                        </select>
+                    </article>
 
                     <div class="flex flex-row text-xs gap-2 text-zinc-500 px-1">
                         <template v-if="selectedArmor[kind] !== undefined">
@@ -124,7 +208,7 @@ function optimize() {
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <div class="bg-zinc-900 p-4 rounded-md flex flex-col gap-2">
             <h2 class="font-black">Stats</h2>
@@ -147,4 +231,8 @@ function optimize() {
             </div>
         </div>
     </div>
+
+    <button @click="dumpState" class="p-2 bg-zinc-700 hover:bg-zinc-500 rounded-md">
+        Dump State
+    </button>
 </template>
