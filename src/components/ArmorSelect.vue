@@ -44,6 +44,7 @@ for (const kind of armorKinds) {
 }
 
 const activeDialog = ref(armorKinds[0]);
+const setArmor = ref((armor: ArmorPiece) => undefined);
 </script>
 
 <template>
@@ -53,6 +54,9 @@ const activeDialog = ref(armorKinds[0]);
                 @click="
                     () => {
                         activeDialog = kind;
+                        setArmor = (armor: ArmorPiece) => {
+                            selectedArmor[kind] = armor;
+                        };
                         armorDialog?.showModal();
                     }
                 "
@@ -68,10 +72,10 @@ const activeDialog = ref(armorKinds[0]);
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
         <template v-for="[id, armor] of allArmors" v-bind:key="String(id)">
             <button
-                v-if="activeDialog === armor.kind"
+                v-show="activeDialog === armor.kind"
                 @click="
                     () => {
-                        selectedArmor[armor.kind] = armor;
+                        setArmor(armor);
                         armorDialog?.close();
                     }
                 "
