@@ -1,5 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { Skill } from "./skill";
+import type { Slot } from "./decorations";
 
 export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
 export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
@@ -13,7 +14,7 @@ export interface RawArmorPiece {
         id: number;
         level: number;
     }[];
-    slots: number[];
+    slots: Slot[];
 }
 
 export interface ArmorPiece {
@@ -22,7 +23,7 @@ export interface ArmorPiece {
     id: number;
     kind: ArmorKind;
     skills: Skill[];
-    slots: number[];
+    slots: Slot[];
 }
 
 export type Projection<T, Prefix extends string = ""> = {

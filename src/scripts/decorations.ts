@@ -36,11 +36,13 @@ const decorationProjection: Projection<RawDecoration> = {
     "skills.skill.name": true,
 };
 
+export type Slot = 0 | 1 | 2;
+
 export interface Decoration {
     id: number;
     name: string;
     description: string;
-    slot: number;
+    slot: Slot;
     kind: DecorationKind;
     skills: Skill[];
 }
@@ -58,7 +60,7 @@ export async function getDecorations(skills: Map<number, Skill>): Promise<Map<nu
                 id: rawDecoration.id,
                 name: rawDecoration.name,
                 description: rawDecoration.description,
-                slot: rawDecoration.slot,
+                slot: rawDecoration.slot as Slot,
                 kind: rawDecoration.kind,
                 skills: rawDecoration.skills.map(decorationSkill => {
                     const skill = skills.get(decorationSkill.skill.id);
