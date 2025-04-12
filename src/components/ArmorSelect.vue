@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref, useTemplateRef, watchEffect } from "vue";
+import { reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import type { Skill } from "../scripts/skill";
 import ArmorCard from "./ArmorCard.vue";
-import { assert } from "tsafe/assert";
 import { parseInt2 } from "../scripts/util";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
@@ -13,15 +12,6 @@ const props = defineProps<{
     allArmors: Map<number, ArmorPiece>;
     allDecorations: Map<number, Decoration>;
 }>();
-
-// const emit = defineEmits<{
-//     change: [];
-//     update: [value: string]; // named tuple syntax
-// }>();
-// const selected = ref("");
-// watchEffect(() => {
-//     emit("update", selected.value);
-// });
 
 const armorDialog = useTemplateRef("armorDialog");
 const decoDialog = useTemplateRef("decoDialog");
@@ -64,6 +54,21 @@ const selectedDecorations = reactive(
 ) as Record<ArmorKind, Record<DecoSlot, Decoration | undefined>>;
 
 const setDecoration = ref((decoration: Decoration) => undefined);
+
+export type ArmorEmits = {
+    armor: Record<ArmorKind, ArmorPiece | undefined>;
+    decorations: Record<ArmorKind, Record<DecoSlot, Decoration | undefined>>;
+};
+const emits = defineEmits<{
+    "update:armor": [value: ArmorEmits];
+}>();
+
+watchEffect(() => {
+    emits("update:armor", {
+        armor: selectedArmor,
+        decorations: selectedDecorations,
+    });
+});
 </script>
 
 <template>
@@ -113,6 +118,19 @@ const setDecoration = ref((decoration: Decoration) => undefined);
 
     <dialog ref="armorDialog" closedby="any">
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
+        <button
+            class="bg-slate-600 p-2"
+            @click="
+                () => {
+                    if (showArmorsFor !== undefined) {
+                        selectedArmor[showArmorsFor] = undefined;
+                    }
+                    armorDialog?.close();
+                }
+            "
+        >
+            Remove
+        </button>
         <button
             v-for="[id, armor] of allArmors"
             v-bind:key="String(id)"
