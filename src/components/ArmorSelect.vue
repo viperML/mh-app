@@ -5,7 +5,7 @@ import type { Skill } from "../scripts/skill";
 import ArmorCard from "./ArmorCard.vue";
 import { assert } from "tsafe/assert";
 import { parseInt2 } from "../scripts/util";
-import type { Decoration, Slot } from "../scripts/decorations";
+import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
 
 const props = defineProps<{
@@ -14,21 +14,17 @@ const props = defineProps<{
     allDecorations: Map<number, Decoration>;
 }>();
 
-const emit = defineEmits<{
-    change: [];
-    update: [value: string]; // named tuple syntax
-}>();
-
-const selected = ref("");
-watchEffect(() => {
-    emit("update", selected.value);
-});
+// const emit = defineEmits<{
+//     change: [];
+//     update: [value: string]; // named tuple syntax
+// }>();
+// const selected = ref("");
+// watchEffect(() => {
+//     emit("update", selected.value);
+// });
 
 const armorDialog = useTemplateRef("armorDialog");
 const decoDialog = useTemplateRef("decoDialog");
-
-const someArmor = props.allArmors.entries().next().value?.[1];
-assert(someArmor);
 
 const selectedArmor = reactive(
     Object.fromEntries(
@@ -52,19 +48,20 @@ const setArmor = ref((armor: ArmorPiece) => undefined);
 
 const showDecorationsFor = ref(3);
 
-type SlotId = 0 | 1 | 2
-
 const selectedDecorations = reactive(
     Object.fromEntries(
         armorKinds.map(kind => {
-            return [kind, {
-                0: undefined,
-                1: undefined,
-                2: undefined,
-            }];
+            return [
+                kind,
+                {
+                    0: undefined,
+                    1: undefined,
+                    2: undefined,
+                },
+            ];
         }),
     ),
-) as Record<ArmorKind, Record<SlotId, Decoration | undefined>>;
+) as Record<ArmorKind, Record<DecoSlot, Decoration | undefined>>;
 
 const setDecoration = ref((decoration: Decoration) => undefined);
 </script>
@@ -83,7 +80,7 @@ const setDecoration = ref((decoration: Decoration) => undefined);
                                 0: undefined,
                                 1: undefined,
                                 2: undefined,
-                            }
+                            };
                         };
                         armorDialog?.showModal();
                     }
@@ -93,20 +90,21 @@ const setDecoration = ref((decoration: Decoration) => undefined);
             </button>
 
             <button
-                v-for="slotLevel, slotId of selectedArmor[kind]?.slots"
+                v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
+                v-show="slotLevel"
                 v-bind:key="slotId"
                 @click="
                     () => {
                         showDecorationsFor = slotLevel;
                         setDecoration = (deco: Decoration) => {
-                            selectedDecorations[kind][slotId as SlotId] = deco;
-                        }
+                            selectedDecorations[kind][slotId] = deco;
+                        };
                         decoDialog?.showModal();
                     }
                 "
             >
                 lvl: {{ slotLevel }} / slot: {{ slotId }}
-                <DecorationBtn :decoration="selectedDecorations[kind][slotId as SlotId]" />
+                <DecorationBtn :decoration="selectedDecorations[kind][slotId]" />
             </button>
         </div>
     </article>

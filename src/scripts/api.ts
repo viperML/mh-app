@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { Skill } from "./skill";
-import type { Slot } from "./decorations";
+import type { DecoSlot, DecoSlotLevel } from "./decorations";
 
 export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
 export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
@@ -14,7 +14,7 @@ export interface RawArmorPiece {
         id: number;
         level: number;
     }[];
-    slots: Slot[];
+    slots: DecoSlotLevel[];
 }
 
 export interface ArmorPiece {
@@ -23,7 +23,7 @@ export interface ArmorPiece {
     id: number;
     kind: ArmorKind;
     skills: Skill[];
-    slots: Slot[];
+    slots: Record<DecoSlot, DecoSlotLevel>;
 }
 
 export type Projection<T, Prefix extends string = ""> = {
@@ -102,7 +102,7 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
     const [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
 
     const allRawPieces = piecesRes.concat(
-        charmsRes.map((charm) => {
+        charmsRes.map(charm => {
             const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
             assert(highestRank !== undefined);
 
@@ -117,14 +117,19 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
         }),
     );
 
-    const allPieces = allRawPieces.map((piece) => {
+    const allPieces = allRawPieces.map(piece => {
         const res: ArmorPiece = {
             ...piece,
-            skills: piece.skills.map((skill) => {
+            skills: piece.skills.map(skill => {
                 const skillInstance = skills.get(skill.id);
                 assert(skillInstance);
                 return skillInstance;
             }),
+            slots: {
+                0: piece.slots[0] ?? 0,
+                1: piece.slots[1] ?? 0,
+                2: piece.slots[2] ?? 0,
+            },
         };
         return res;
     });

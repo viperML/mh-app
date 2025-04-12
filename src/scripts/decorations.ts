@@ -36,13 +36,16 @@ const decorationProjection: Projection<RawDecoration> = {
     "skills.skill.name": true,
 };
 
-export type Slot = 0 | 1 | 2;
+export type DecoSlot = 0 | 1 | 2;
+
+/// A level of 0 is empty
+export type DecoSlotLevel = 0 | 1 | 2 | 3;
 
 export interface Decoration {
     id: number;
     name: string;
     description: string;
-    slot: Slot;
+    slot: DecoSlotLevel;
     kind: DecorationKind;
     skills: Skill[];
 }
@@ -60,7 +63,7 @@ export async function getDecorations(skills: Map<number, Skill>): Promise<Map<nu
                 id: rawDecoration.id,
                 name: rawDecoration.name,
                 description: rawDecoration.description,
-                slot: rawDecoration.slot as Slot,
+                slot: rawDecoration.slot as DecoSlotLevel,
                 kind: rawDecoration.kind,
                 skills: rawDecoration.skills.map(decorationSkill => {
                     const skill = skills.get(decorationSkill.skill.id);
