@@ -25,13 +25,15 @@ export interface RawSkill {
 const rawSkillProjection: Projection<RawSkill> = {
     id: true,
     name: true,
-    description: true,
+    description: false,
     kind: true,
-    "ranks.id": true,
-    "ranks.description": true,
-    "ranks.level": true,
-    "ranks.name": true,
+    "ranks.id": false,
+    "ranks.description": false,
+    "ranks.level": false,
+    "ranks.name": false,
     "ranks.skill": false,
+    // @ts-expect-error All rank information is removed
+    ranks: false,
 };
 
 export type SkillRank2 = {
@@ -43,7 +45,6 @@ export type Skill2 = {
     id: number;
     name: string;
     kind: SkillKind;
-    description: string;
 };
 
 export async function getSkills(): Promise<Map<number, Skill2>> {
@@ -57,7 +58,6 @@ export async function getSkills(): Promise<Map<number, Skill2>> {
 
     for (const s of rawSkills) {
         res.set(s.id, {
-            description: s.description,
             id: s.id,
             kind: s.kind,
             name: s.name,

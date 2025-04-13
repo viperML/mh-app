@@ -16,13 +16,13 @@ interface RawDecoration {
 const decorationProjection: Projection<RawDecoration> = {
     id: true,
     name: true,
-    description: true,
+    description: false,
     slot: true,
     kind: true,
-    "skills.description": true,
+    "skills.description": false,
     "skills.id": true,
     "skills.level": true,
-    "skills.name": true,
+    "skills.name": false,
     "skills.skill": true,
 };
 
@@ -34,7 +34,6 @@ export type DecoSlotLevel = 0 | 1 | 2 | 3;
 export interface Decoration {
     id: number;
     name: string;
-    description: string;
     slot: DecoSlotLevel;
     kind: DecorationKind;
     skills: SkillRank2[];
@@ -52,7 +51,6 @@ export async function getDecorations(skills: Map<number, Skill2>): Promise<Map<n
             const decoration: Decoration = {
                 id: rawDecoration.id,
                 name: rawDecoration.name,
-                description: rawDecoration.description,
                 slot: rawDecoration.slot as DecoSlotLevel,
                 kind: rawDecoration.kind,
                 skills: rawDecoration.skills.map(rank => {

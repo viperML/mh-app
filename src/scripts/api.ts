@@ -16,7 +16,6 @@ export interface RawArmorPiece {
 
 export interface ArmorPiece {
     name: string;
-    description: string;
     id: number;
     kind: ArmorKind;
     skills: SkillRank2[];
@@ -43,14 +42,14 @@ export type Projection<T, Prefix extends string = ""> = {
 
 export const armorProjection: Projection<RawArmorPiece> = {
     name: true,
-    description: true,
+    description: false,
     id: true,
     kind: true,
     slots: true,
-    "skills.description": true,
-    "skills.id": true,
+    "skills.description": false,
+    "skills.id": false,
     "skills.level": true,
-    "skills.name": true,
+    "skills.name": false,
     "skills.skill": true,
 };
 
@@ -69,12 +68,12 @@ interface CharmRank {
 const charmProjection: Projection<Charm> = {
     id: true,
     "ranks.level": true,
-    "ranks.name": true,
-    "ranks.description": true,
-    "ranks.skills.id": true,
+    "ranks.name": false,
+    "ranks.description": false,
+    "ranks.skills.id": false,
     "ranks.skills.level": true,
-    "ranks.skills.description": true,
-    "ranks.skills.name": true,
+    "ranks.skills.description": false,
+    "ranks.skills.name": false,
     "ranks.skills.skill": true,
 };
 
@@ -119,7 +118,6 @@ export async function getArmors(skills: Map<number, Skill2>): Promise<Map<number
 
     const allPieces = allRawPieces.map(piece => {
         const res: ArmorPiece = {
-            description: piece.description,
             id: piece.id,
             kind: piece.kind,
             name: piece.name,
