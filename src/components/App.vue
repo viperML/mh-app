@@ -6,6 +6,7 @@ import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
 import { computed, ref } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
+import { efr } from "../scripts/efr";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
@@ -44,6 +45,14 @@ const mergedSkills = computed(() => {
     }
     return res;
 });
+
+const myEfr = computed(() => {
+    return efr({
+        attack: 200,
+        affinity: 0,
+        skills: mergedSkills.value
+    })
+});
 </script>
 
 <template>
@@ -65,5 +74,9 @@ const mergedSkills = computed(() => {
         <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
             {{ skill }} @ {{ level }}
         </span>
+    </div>
+
+    <div>
+        EFR: {{ myEfr }}
     </div>
 </template>
