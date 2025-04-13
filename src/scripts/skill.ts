@@ -81,15 +81,20 @@ export type MergedSkills = Map<string, number>;
 
 export function mergeSkillRanks(...ranks: SkillRank2[]): MergedSkills {
     const res: MergedSkills = new Map();
+    mergeSkillsRanksInto(res, ...ranks);
+    return res;
+}
+
+export function mergeSkillsRanksInto(merged: MergedSkills, ...ranks: SkillRank2[]) {
     for (const rank of ranks) {
         const skill = rank.skill.name;
         const level = rank.level;
 
-        if (res.has(skill)) {
-            res.set(skill, res.get(skill)! + level);
+        if (merged.has(skill)) {
+            merged.set(skill, merged.get(skill)! + level);
         } else {
-            res.set(skill, level);
+            merged.set(skill, level);
         }
     }
-    return res;
+    return merged;
 }

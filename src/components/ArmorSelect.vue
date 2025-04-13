@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
+import { computed, reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
 import { parseInt2 } from "../scripts/util";
@@ -64,6 +64,12 @@ export type ArmorEmits = {
 const emits = defineEmits<{
     "update:armor": [value: ArmorEmits];
 }>();
+watchEffect(() => {
+    emits("update:armor", {
+        armor: selectedArmor,
+        decorations: selectedDecorations,
+    })
+})
 </script>
 
 <template>

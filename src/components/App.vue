@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import ArmorSelect from "./ArmorSelect.vue";
 
-import { getSkills } from "../scripts/skill";
+import { getSkills, mergeSkillRanks, mergeSkillsRanksInto, type MergedSkills } from "../scripts/skill";
 import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
 
 const allSkills = await getSkills();
@@ -23,6 +23,27 @@ function swapDecorationDisplay() {
     }
     localStorage.setItem("decoration-display", decorationDisplay.value);
 }
+
+const mergedSkills = computed(() => {
+    const res: MergedSkills = new Map();
+    if (armorEmits.value?.armor) {
+        for (const [, piece] of Object.entries(armorEmits.value.armor)) {
+            if (piece) {
+                mergeSkillsRanksInto(res, ...piece.skills);
+            }
+        }
+    }
+    if (armorEmits.value?.decorations) {
+        for (const [, decos] of Object.entries(armorEmits.value.decorations)) {
+            for (const [, deco] of Object.entries(decos)) {
+                if (deco) {
+                    mergeSkillsRanksInto(res, ...deco.skills);
+                }
+            }
+        }
+    }
+    return res;
+});
 </script>
 
 <template>
@@ -30,12 +51,19 @@ function swapDecorationDisplay() {
         Decoration display: {{ decorationDisplay }}
     </button>
 
-    <ArmorSelect
-        :all-armors="allArmors"
-        :all-skills="allSkills"
-        :all-decorations="allDecorations"
-        :decoration-display="decorationDisplay"
-    />
+    <div>
+        <ArmorSelect
+            :all-armors="allArmors"
+            :all-skills="allSkills"
+            :all-decorations="allDecorations"
+            :decoration-display="decorationDisplay"
+            @update:armor="e => armorEmits = e"
+        />
+    </div>
 
-    <div v-for="(armor, kind) of armorEmits?.armor" v-bind:key="kind">{{ kind }} -> {{ armor?.name }}</div>
+    <div class="grid grid-cols-1 gap-2">
+        <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
+            {{ skill }} @ {{ level }}
+        </span>
+    </div>
 </template>
