@@ -10,11 +10,32 @@ import type { ArmorEmits } from "./ArmorSelect.vue";
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
 
-const em = ref<ArmorEmits>();
+const armorEmits = ref<ArmorEmits>();
+
+export type DecorationDisplay = "name" | "skills";
+
+const decorationDisplay = ref((localStorage.getItem("decoration-display") ?? "name") as DecorationDisplay);
+function swapDecorationDisplay() {
+    if (decorationDisplay.value === "name") {
+        decorationDisplay.value = "skills";
+    } else {
+        decorationDisplay.value = "name";
+    }
+    localStorage.setItem("decoration-display", decorationDisplay.value);
+}
 </script>
 
 <template>
-    <ArmorSelect :all-armors="allArmors" :all-skills="allSkills" :all-decorations="allDecorations" v-model:armor="em" />
+    <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">
+        Decoration display: {{ decorationDisplay }}
+    </button>
 
-    <div v-for="(armor, kind) of em?.armor" v-bind:key="kind">{{ kind }} -> {{ armor?.name }}</div>
+    <ArmorSelect
+        :all-armors="allArmors"
+        :all-skills="allSkills"
+        :all-decorations="allDecorations"
+        :decoration-display="decorationDisplay"
+    />
+
+    <div v-for="(armor, kind) of armorEmits?.armor" v-bind:key="kind">{{ kind }} -> {{ armor?.name }}</div>
 </template>

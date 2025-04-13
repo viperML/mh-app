@@ -1,18 +1,8 @@
 import { assert } from "tsafe/assert";
 import type { Projection } from "./api";
-import type { Skill } from "./skill";
+import type { RawSkillRank, Skill2, SkillRank2 } from "./skill";
 
 export type DecorationKind = "weapon" | "armor";
-
-type DecorationSkill = {
-    skill: {
-        id: number;
-        name: string;
-    };
-    level: number;
-    description: string;
-    id: string;
-};
 
 interface RawDecoration {
     id: number;
@@ -20,7 +10,7 @@ interface RawDecoration {
     description: string;
     slot: number;
     kind: DecorationKind;
-    skills: DecorationSkill[];
+    skills: RawSkillRank[];
 }
 
 const decorationProjection: Projection<RawDecoration> = {
@@ -29,11 +19,11 @@ const decorationProjection: Projection<RawDecoration> = {
     description: true,
     slot: true,
     kind: true,
-    "skills.id": true,
     "skills.description": true,
+    "skills.id": true,
     "skills.level": true,
-    "skills.skill.id": true,
-    "skills.skill.name": true,
+    "skills.name": true,
+    "skills.skill": true,
 };
 
 export type DecoSlot = 0 | 1 | 2;
@@ -47,30 +37,31 @@ export interface Decoration {
     description: string;
     slot: DecoSlotLevel;
     kind: DecorationKind;
-    skills: Skill[];
+    skills: SkillRank2[];
 }
 
-export async function getDecorations(skills: Map<number, Skill>): Promise<Map<number, Decoration>> {
+export async function getDecorations(skills: Map<number, Skill2>): Promise<Map<number, Decoration>> {
     const url = new URL("https://wilds.mhdb.io/en/decorations");
     url.searchParams.set("p", JSON.stringify(decorationProjection));
 
     const resp = await fetch(url);
-    const rawDecoratins = (await resp.json()) as RawDecoration[];
+    const rawDecorations = (await resp.json()) as RawDecoration[];
 
     const res = new Map<number, Decoration>(
-        rawDecoratins.map(rawDecoration => {
+        rawDecorations.map(rawDecoration => {
             const decoration: Decoration = {
                 id: rawDecoration.id,
                 name: rawDecoration.name,
                 description: rawDecoration.description,
                 slot: rawDecoration.slot as DecoSlotLevel,
                 kind: rawDecoration.kind,
-                skills: rawDecoration.skills.map(decorationSkill => {
-                    const skill = skills.get(decorationSkill.skill.id);
-                    assert(skill);
+                skills: rawDecoration.skills.map(rank => {
+                    assert(rank.skill?.id);
+                    const s = skills.get(rank.skill.id);
+                    assert(s);
                     return {
-                        ...skill,
-                        level: decorationSkill.level,
+                        level: rank.level,
+                        skill: s,
                     };
                 }),
             };

@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
-import type { Skill } from "./skill";
 import type { DecoSlot, DecoSlotLevel } from "./decorations";
+import type { RawSkillRank, Skill2, SkillRank2 } from "./skill";
 
 export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
 export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
@@ -10,10 +10,7 @@ export interface RawArmorPiece {
     description: string;
     id: number;
     kind: ArmorKind;
-    skills: {
-        id: number;
-        level: number;
-    }[];
+    skills: RawSkillRank[];
     slots: DecoSlotLevel[];
 }
 
@@ -22,7 +19,7 @@ export interface ArmorPiece {
     description: string;
     id: number;
     kind: ArmorKind;
-    skills: Skill[];
+    skills: SkillRank2[];
     slots: Record<DecoSlot, DecoSlotLevel>;
 }
 
@@ -49,9 +46,12 @@ export const armorProjection: Projection<RawArmorPiece> = {
     description: true,
     id: true,
     kind: true,
+    slots: true,
+    "skills.description": true,
     "skills.id": true,
     "skills.level": true,
-    slots: true,
+    "skills.name": true,
+    "skills.skill": true,
 };
 
 interface Charm {
@@ -63,10 +63,7 @@ interface CharmRank {
     level: number;
     name: string;
     description: string;
-    skills: {
-        id: number;
-        level: number;
-    }[];
+    skills: RawSkillRank[];
 }
 
 const charmProjection: Projection<Charm> = {
@@ -76,9 +73,12 @@ const charmProjection: Projection<Charm> = {
     "ranks.description": true,
     "ranks.skills.id": true,
     "ranks.skills.level": true,
+    "ranks.skills.description": true,
+    "ranks.skills.name": true,
+    "ranks.skills.skill": true,
 };
 
-export async function getArmors(skills: Map<number, Skill>): Promise<Map<number, ArmorPiece>> {
+export async function getArmors(skills: Map<number, Skill2>): Promise<Map<number, ArmorPiece>> {
     const pieces = async () => {
         const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));
@@ -101,17 +101,17 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
 
     const [piecesRes, charmsRes] = await Promise.all([pieces(), charms()]);
 
-    const allRawPieces = piecesRes.concat(
+    const allRawPieces: RawArmorPiece[] = piecesRes.concat(
         charmsRes.map(charm => {
-            const highestRank = charm.ranks.sort((a, b) => b.level - a.level)[0];
-            assert(highestRank !== undefined);
+            const highestCharm = charm.ranks.sort((a, b) => b.level - a.level)[0];
+            assert(highestCharm);
 
             return {
-                name: highestRank.name,
-                description: highestRank.description,
+                name: highestCharm.name,
+                description: highestCharm.description,
                 id: charm.id,
                 kind: "charm",
-                skills: highestRank.skills,
+                skills: highestCharm.skills,
                 slots: [],
             };
         }),
@@ -119,11 +119,18 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
 
     const allPieces = allRawPieces.map(piece => {
         const res: ArmorPiece = {
-            ...piece,
-            skills: piece.skills.map(skill => {
-                const skillInstance = skills.get(skill.id);
-                assert(skillInstance);
-                return skillInstance;
+            description: piece.description,
+            id: piece.id,
+            kind: piece.kind,
+            name: piece.name,
+            skills: piece.skills.map(rank => {
+                assert(rank.skill?.id);
+                const s = skills.get(rank.skill.id);
+                assert(s);
+                return {
+                    level: rank.level,
+                    skill: s,
+                };
             }),
             slots: {
                 0: piece.slots[0] ?? 0,

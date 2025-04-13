@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
-import type { Skill } from "../scripts/skill";
 import ArmorCard from "./ArmorCard.vue";
 import { parseInt2 } from "../scripts/util";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
+import type { DecorationDisplay } from "./App.vue";
+import type { Skill2 } from "../scripts/skill";
 
 const props = defineProps<{
-    allSkills: Map<number, Skill>;
+    allSkills: Map<number, Skill2>;
     allArmors: Map<number, ArmorPiece>;
     allDecorations: Map<number, Decoration>;
+    decorationDisplay: DecorationDisplay;
 }>();
 
 const armorDialog = useTemplateRef("armorDialog");
@@ -62,13 +64,6 @@ export type ArmorEmits = {
 const emits = defineEmits<{
     "update:armor": [value: ArmorEmits];
 }>();
-
-watchEffect(() => {
-    emits("update:armor", {
-        armor: selectedArmor,
-        decorations: selectedDecorations,
-    });
-});
 </script>
 
 <template>
@@ -109,12 +104,20 @@ watchEffect(() => {
                 "
             >
                 lvl: {{ slotLevel }} / slot: {{ slotId }}
-                <DecorationBtn :decoration="selectedDecorations[kind][slotId]" />
+                <DecorationBtn
+                    :decoration="selectedDecorations[kind][slotId]"
+                    :decoration-display="props.decorationDisplay"
+                />
             </button>
         </div>
     </article>
 
     <button class="bg-slate-600 p-2" @click="decoDialog?.showModal()">Show dialog</button>
+
+    <button class="bg-slate-600 p-2" @click="() => {
+        console.log(toRaw(selectedArmor));
+        console.log(toRaw(selectedDecorations));
+    }">Dump state</button>
 
     <dialog ref="armorDialog" closedby="any">
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
@@ -150,7 +153,7 @@ watchEffect(() => {
         <button
             v-for="[id, deco] of allDecorations"
             v-bind:key="id"
-            v-show="deco.slot <= showDecorationsFor"
+            v-show="deco.kind === 'armor' && deco.slot <= showDecorationsFor"
             @click="
                 () => {
                     setDecoration(deco);
@@ -158,7 +161,7 @@ watchEffect(() => {
                 }
             "
         >
-            <DecorationBtn :decoration="deco" />
+            <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
         </button>
     </dialog>
 </template>

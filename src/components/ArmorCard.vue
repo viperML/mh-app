@@ -12,7 +12,7 @@ const props = defineProps<{
             {{ props.armor?.name ?? "Not set" }}
         </span>
         <div class="text-xs m-2 flex flex-row gap-4">
-            <span v-for="skill of props.armor?.skills" v-bind:key="String(skill.id)">{{ skill.name }}</span>
+            <span v-for="skillRank of props.armor?.skills" v-bind:key="String(skillRank.skill.id)">{{ skillRank.skill.name }}</span>
         </div>
     </div>
 </template>
