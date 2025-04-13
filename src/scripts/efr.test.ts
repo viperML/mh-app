@@ -8,7 +8,6 @@ function fakeSkill(name: string, level: number): SkillRank2 {
         skill: {
             name,
             id: 0,
-            description: "FIXME",
             kind: "armor",
         },
     };
