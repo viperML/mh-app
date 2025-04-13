@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { Projection } from "./api";
-import type { RawSkillRank, Skill2, SkillRank2 } from "./skill";
+import { rawRankToRank, type RawSkillRank, type Skill2, type SkillRank2 } from "./skill";
 
 export type DecorationKind = "weapon" | "armor";
 
@@ -56,13 +56,9 @@ export async function getDecorations(skills: Map<number, Skill2>): Promise<Map<n
                 slot: rawDecoration.slot as DecoSlotLevel,
                 kind: rawDecoration.kind,
                 skills: rawDecoration.skills.map(rank => {
-                    assert(rank.skill?.id);
-                    const s = skills.get(rank.skill.id);
-                    assert(s);
-                    return {
-                        level: rank.level,
-                        skill: s,
-                    };
+                    const res = rawRankToRank(rank, skills);
+                    assert(res);
+                    return res;
                 }),
             };
             return [decoration.id, decoration];

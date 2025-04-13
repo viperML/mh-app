@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { DecoSlot, DecoSlotLevel } from "./decorations";
-import type { RawSkillRank, Skill2, SkillRank2 } from "./skill";
+import { rawRankToRank, type RawSkillRank, type Skill2, type SkillRank2 } from "./skill";
 
 export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
 export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
@@ -124,13 +124,9 @@ export async function getArmors(skills: Map<number, Skill2>): Promise<Map<number
             kind: piece.kind,
             name: piece.name,
             skills: piece.skills.map(rank => {
-                assert(rank.skill?.id);
-                const s = skills.get(rank.skill.id);
-                assert(s);
-                return {
-                    level: rank.level,
-                    skill: s,
-                };
+                const res = rawRankToRank(rank, skills);
+                assert(res);
+                return res;
             }),
             slots: {
                 0: piece.slots[0] ?? 0,

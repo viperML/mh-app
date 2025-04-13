@@ -8,7 +8,7 @@ exports[`Skills:  1`] = `
 }
 `;
 
-exports[`Skills: Agitator 5 1`] = `
+exports[`Skills: Agitator@5 1`] = `
 {
   "affinity": 0.15,
   "attack": 120,
@@ -16,7 +16,7 @@ exports[`Skills: Agitator 5 1`] = `
 }
 `;
 
-exports[`Skills: Critical Eye 5 1`] = `
+exports[`Skills: Critical Eye@5 1`] = `
 {
   "affinity": 0.2,
   "attack": 100,
@@ -24,7 +24,7 @@ exports[`Skills: Critical Eye 5 1`] = `
 }
 `;
 
-exports[`Skills: Weakness Exploit 5 1`] = `
+exports[`Skills: Weakness Exploit@5 1`] = `
 {
   "affinity": 0.3,
   "attack": 100,
@@ -34,7 +34,7 @@ exports[`Skills: Weakness Exploit 5 1`] = `
 
 exports[`merge skills 1`] = `
 Map {
-  "Agitator" => 5,
   "Weakness Exploit" => 3,
+  "Agitator" => 5,
 }
 `;

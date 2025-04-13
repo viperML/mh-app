@@ -67,17 +67,29 @@ export async function getSkills(): Promise<Map<number, Skill2>> {
     return res;
 }
 
-// export function mergeSkills(skills: Skill[]): MergedSkills {
-//     const merged: MergedSkills = new Map();
+export function rawRankToRank(rank: RawSkillRank, allSkills: Map<number, Skill2>): SkillRank2 | undefined {
+    const skill = rank.skill?.id ? allSkills.get(rank.skill.id) : undefined;
+    return skill
+        ? {
+              level: rank.level,
+              skill,
+          }
+        : undefined;
+}
 
-//     for (const skill of skills) {
-//         const prev = merged.get(skill.name);
-//         if (prev === undefined) {
-//             merged.set(skill.name, skill.level);
-//         } else {
-//             merged.set(skill.name, prev + skill.level);
-//         }
-//     }
+export type MergedSkills = Map<string, number>;
 
-//     return merged;
-// }
+export function mergeSkillRanks(...ranks: SkillRank2[]): MergedSkills {
+    const res: MergedSkills = new Map();
+    for (const rank of ranks) {
+        const skill = rank.skill.name;
+        const level = rank.level;
+
+        if (res.has(skill)) {
+            res.set(skill, res.get(skill)! + level);
+        } else {
+            res.set(skill, level);
+        }
+    }
+    return res;
+}
