@@ -4,9 +4,11 @@ import ArmorSelect from "./ArmorSelect.vue";
 import { getSkills, mergeSkillRanks, mergeSkillsRanksInto, type MergedSkills } from "../scripts/skill";
 import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
 import { efr } from "../scripts/efr";
+import WeaponSelect from "./WeaponSelect.vue";
+import type { Weapon } from "../scripts/weapon";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
@@ -46,12 +48,18 @@ const mergedSkills = computed(() => {
     return res;
 });
 
+const weapon = ref<Weapon>();
+
 const myEfr = computed(() => {
-    return efr({
-        attack: 200,
-        affinity: 0,
-        skills: mergedSkills.value
-    })
+    if (weapon.value) {
+        return efr({
+            attack: weapon.value.damage,
+            affinity: weapon.value.affinity,
+            skills: mergedSkills.value,
+        });
+    } else {
+        return undefined;
+    }
 });
 </script>
 
@@ -60,15 +68,17 @@ const myEfr = computed(() => {
         Decoration display: {{ decorationDisplay }}
     </button>
 
-    <div>
-        <ArmorSelect
-            :all-armors="allArmors"
-            :all-skills="allSkills"
-            :all-decorations="allDecorations"
-            :decoration-display="decorationDisplay"
-            @update:armor="e => armorEmits = e"
-        />
-    </div>
+    <WeaponSelect
+        v-model:weapon="weapon"
+    />
+
+    <ArmorSelect
+        :all-armors="allArmors"
+        :all-skills="allSkills"
+        :all-decorations="allDecorations"
+        :decoration-display="decorationDisplay"
+        @update:armor="e => (armorEmits = e)"
+    />
 
     <div class="grid grid-cols-1 gap-2">
         <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
@@ -76,7 +86,5 @@ const myEfr = computed(() => {
         </span>
     </div>
 
-    <div>
-        EFR: {{ myEfr }}
-    </div>
+    <div>EFR: {{ myEfr }}</div>
 </template>
