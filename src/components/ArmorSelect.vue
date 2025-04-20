@@ -2,7 +2,7 @@
 import { computed, reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
-import { parseInt2 } from "../scripts/util";
+import { parseNumber } from "../scripts/util";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
 import type { DecorationDisplay } from "./App.vue";
@@ -21,7 +21,7 @@ const decoDialog = useTemplateRef("decoDialog");
 const selectedArmor = reactive(
     Object.fromEntries(
         armorKinds.map(kind => {
-            const storedId = parseInt2(localStorage.getItem(kind) ?? "");
+            const storedId = parseNumber(localStorage.getItem(kind) ?? "");
             const res = storedId ? props.allArmors.get(storedId) : undefined;
             console.log("Stored", kind, storedId, res);
             return [kind, res];
@@ -109,21 +109,14 @@ watchEffect(() => {
                     }
                 "
             >
-                lvl: {{ slotLevel }} / slot: {{ slotId }}
                 <DecorationBtn
                     :decoration="selectedDecorations[kind][slotId]"
                     :decoration-display="props.decorationDisplay"
+                    :slot-size="slotLevel"
                 />
             </button>
         </div>
     </article>
-
-    <button class="bg-slate-600 p-2" @click="decoDialog?.showModal()">Show dialog</button>
-
-    <button class="bg-slate-600 p-2" @click="() => {
-        console.log(toRaw(selectedArmor));
-        console.log(toRaw(selectedDecorations));
-    }">Dump state</button>
 
     <dialog ref="armorDialog" closedby="any">
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>

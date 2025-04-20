@@ -1,19 +1,18 @@
 @import "tailwindcss" source("../../src");
-@import "@fontsource/inter";
 
 :root {
-    font-family: "Inter", system-ui;
+    font-family: "Inter Variable", monospace, system-ui;
     background-color: #121212;
     color: white;
 
     --color-text-hover: #f1f1f1;
 }
 
-option {
-    /* color: black; */
-    background-color: #121212;
-}
 
 button {
     cursor: pointer;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+    display: none;
 }

@@ -6,6 +6,7 @@ import type { DecorationDisplay } from "./App.vue";
 const props = defineProps<{
     decoration?: Decoration | undefined;
     decorationDisplay: DecorationDisplay;
+    slotSize?: number,
 }>();
 
 const displayName = computed(() => {
@@ -15,10 +16,46 @@ const displayName = computed(() => {
         return props.decoration?.skills.map(skillRank => skillRank.skill.name).join("/") ?? "Not selected";
     }
 });
+
+const slotLevel = computed(() => props.decoration?.slot ?? 0);
+
+// SVG dimensions configuration
+const rectWidth = 4;
+const rectSpacing = 5.5;
+const rectX = (n: number) => (n-1) * rectSpacing + 2;
 </script>
 
 <template>
-    <div class="p-4 text-sm bg-cyan-400 text-black">
+    <div class="p-0.5 text-sm rounded-sm border-1 bg-zinc-900 text-neutral-200 text-start flex items-center gap-1">
+        <svg width="24" height="16" viewBox="0 0 24 16" class="flex-shrink-0">
+            <!-- Slot level indicators -->
+            <rect
+                v-for="n in 3"
+                :key="n"
+                :x="rectX(n)"
+                y="2"
+                :width="rectWidth"
+                height="12"
+                rx="1"
+                :class="[
+                    n <= slotLevel ? 'fill-selected' :
+                    (slotSize && n <= slotSize) ? 'fill-dim' : 'fill-inactive'
+                ]"
+            />
+        </svg>
         {{ displayName }}
     </div>
 </template>
+
+<style scoped>
+@reference "../styles/main.css";
+.fill-selected {
+    @apply fill-red-400;
+}
+.fill-dim {
+    @apply fill-zinc-400;
+}
+.fill-inactive {
+    @apply fill-zinc-800;
+}
+</style>

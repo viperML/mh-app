@@ -2,8 +2,8 @@
 /**
  * Parses a string, possibly returning undefined.
  */
-export function parseInt2(string: string): number | undefined {
-    const res = parseInt(string);
+export function parseNumber(string: string): number | undefined {
+    const res = Number(string);
     if (isNaN(res)) {
         return undefined;
     } else {

@@ -1,6 +1,9 @@
 ---
 import "../styles/main.css";
 
+import "@fontsource-variable/inter";
+import interFile from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
+
 import BrandGithub from "@tabler/icons/outline/brand-github.svg";
 import BrandDiscord from "@tabler/icons/outline/brand-discord.svg";
 import IconApps from "@tabler/icons/outline/apps.svg";
@@ -10,35 +13,30 @@ import IconApps from "@tabler/icons/outline/apps.svg";
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link href={interFile} rel="preload" as="font" type="font/woff2" crossorigin="anonymous" />
     </head>
 
-    <body>
-        <nav>
-            <div>
-                Monster Hunter Wilds <span class="font-black">Calculator</span>
-            </div>
+    <body class="grid grid-cols-1 w-full justify-items-center">
+        <nav class="flex flex-row gap-2 items-center m-2 px-4 py-2 rounded-lg justify-center">
+            <span class="w-max"> MH:Wilds Builder </span>
 
-            <div class="nav-links flex flex-row items-center gap-2">
-                <a href="https://docs.wilds.mhdb.io/#introduction" rel="external" target="_blank" class="btn">
-                    <IconApps width="20" height="20" />
-                    <span>API</span>
-                </a>
+            <a href="https://docs.wilds.mhdb.io/#introduction" rel="external" target="_blank" class="btn">
+                <IconApps width="20" height="20" />
+                <span>API</span>
+            </a>
 
-                <a href="https://github.com/viperML/mh-app" rel="external" target="_blank" class="btn">
-                    <BrandGithub width="20" height="20" />
-                    <span>GitHub</span>
-                </a>
+            <a href="https://github.com/viperML/mh-app" rel="external" target="_blank" class="btn">
+                <BrandGithub width="20" height="20" />
+                <span>GitHub</span>
+            </a>
 
-                <a href="https://discord.com/invite/6GEHHQh" rel="external" target="_blank" class="btn">
-                    <BrandDiscord width="20" height="20" />
-                    <span>Discord</span>
-                </a>
-            </div>
+            <a href="https://discord.com/invite/6GEHHQh" rel="external" target="_blank" class="btn">
+                <BrandDiscord width="20" height="20" />
+                <span>Discord</span>
+            </a>
         </nav>
 
-        <main class="flex flex-col items-center">
-            <slot />
-        </main>
+        <slot />
 
         <footer>
             <div>
@@ -74,10 +72,6 @@ import IconApps from "@tabler/icons/outline/apps.svg";
     }
 
     nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 24px;
         background-color: black;
         border-bottom: 1px solid rgb(46, 46, 46);
     }

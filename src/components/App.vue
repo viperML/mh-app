@@ -64,27 +64,40 @@ const myEfr = computed(() => {
 </script>
 
 <template>
-    <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">
-        Decoration display: {{ decorationDisplay }}
-    </button>
+    <main class="grid grid-cols-1 gap-10">
+        <div class="mh-card">
+            <WeaponSelect v-model:weapon="weapon" :decoration-display />
 
-    <WeaponSelect
-        v-model:weapon="weapon"
-    />
+            <ArmorSelect
+                :all-armors="allArmors"
+                :all-skills="allSkills"
+                :all-decorations="allDecorations"
+                :decoration-display="decorationDisplay"
+                @update:armor="e => (armorEmits = e)"
+            />
+        </div>
 
-    <ArmorSelect
-        :all-armors="allArmors"
-        :all-skills="allSkills"
-        :all-decorations="allDecorations"
-        :decoration-display="decorationDisplay"
-        @update:armor="e => (armorEmits = e)"
-    />
+        <div class="mh-card">
+            <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
+                {{ skill }} @ {{ level }}
+            </span>
+        </div>
 
-    <div class="grid grid-cols-1 gap-2">
-        <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
-            {{ skill }} @ {{ level }}
-        </span>
-    </div>
+        <div class="mh-card">
+            <div>EFR: {{ myEfr }}</div>
+        </div>
 
-    <div>EFR: {{ myEfr }}</div>
+        <!-- <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">
+            Decoration display: {{ decorationDisplay }}
+        </button> -->
+    </main>
 </template>
+
+<style>
+@reference "../styles/main.css";
+.mh-card {
+    @apply rounded-lg;
+    background-color: black;
+    padding: --spacing(2);
+}
+</style>
