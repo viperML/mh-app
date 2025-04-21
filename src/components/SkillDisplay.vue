@@ -14,6 +14,17 @@ const rectSpacing = rectWidth + rectGap; // Total space each rectangle occupies
 // Calculate the actual SVG width needed based on skill max rank (capped at 5)
 const maxDisplayedRanks = Math.min(5, props.skillMaxRank);
 const svgWidth = maxDisplayedRanks * rectSpacing;
+
+// Function to determine rectangle class based on rank
+const getRectClass = (index: number) => {
+    if (index > props.skillMaxRank) {
+        return 'fill-overflow'; // Exceeds max rank
+    } else if (index <= props.skillRank) {
+        return 'fill-active'; // Within valid range and active
+    } else {
+        return 'fill-inactive'; // Inactive
+    }
+};
 </script>
 
 <template>
@@ -28,7 +39,7 @@ const svgWidth = maxDisplayedRanks * rectSpacing;
             :width="rectWidth"
             :height="rectHeight"
             rx="2"
-            :class="n <= skillRank ? 'fill-active' : 'fill-inactive'"
+            :class="getRectClass(n)"
         />
     </svg>
 </template>
@@ -40,5 +51,8 @@ const svgWidth = maxDisplayedRanks * rectSpacing;
 }
 .fill-inactive {
     fill: var(--color-zinc-700);
+}
+.fill-overflow {
+    fill: var(--color-red-500);
 }
 </style>

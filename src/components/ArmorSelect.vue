@@ -146,7 +146,7 @@ function shouldShowDecorations(armor: ArmorPiece) {
             />
         </button>
 
-        <div class="grid grid-cols-1 gap-1 h-max" v-show="selectedArmor[kind] && shouldShowDecorations(selectedArmor[kind])">
+        <div class="grid grid-cols-1 lg:grid-rows-3 gap-1 h-max" v-show="selectedArmor[kind] && shouldShowDecorations(selectedArmor[kind])">
             <button
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
