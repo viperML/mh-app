@@ -16,8 +16,8 @@ const KEYS = {
 
 const weapon = reactive<Weapon>({
     id: NaN,
-    damage: parseNumber(localStorage.getItem(KEYS.CUSTOM_DMG) ?? "") ?? 200,
-    affinity: parseNumber(localStorage.getItem(KEYS.CUSTOM_AFF) ?? "") ?? 0,
+    damage: parseNumber(localStorage.getItem(KEYS.CUSTOM_DMG) ?? "none") ?? 200,
+    affinity: parseNumber(localStorage.getItem(KEYS.CUSTOM_AFF) ?? "none") ?? 0,
     skills: [],
 });
 
@@ -43,45 +43,63 @@ const displayedAffinity = computed<number>({
 
 const dmgInput = useTemplateRef("dmgInput");
 const affInput = useTemplateRef("affInput");
+
+const iconSize = 20;
+import AttackIcon from "../assets/attac_icons_mhw_wiki_guide.png";
+import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
 </script>
 
 <template>
-    <section class="grid grid-cols-2 grid-rows-3 items-center bg-zinc-900 p-10 gap-5">
+    <div class="mh-weapon">
         <h2 class="">Custom Weapon</h2>
 
-        <div class="row-span-full col-start-2 grid gap-4">
+        <div class="flex flex-row gap-5">
+            <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-100" @click="_ => dmgInput?.focus()">
+                <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
+                <input ref="dmgInput" v-model.number="weapon.damage" type="number" />
+            </div>
+
+            <div class="mh-number mh-affinity grid-cols-[auto_1fr_auto] bg-purple-950 text-purple-100" @click="_ => affInput?.focus()">
+                <img :src="AffinityIcon.src" :width="iconSize" :height="iconSize" />
+                <input ref="affInput" v-model.number="displayedAffinity" type="number" />
+            </div>
+        </div>
+
+        <div class="grid gap-4">
             <DecorationBtn :decorationDisplay v-for="slotId of [1, 2, 3]" v-bind:key="slotId" />
         </div>
-
-        <div class="mh-number grid-cols-[auto_1fr]" @click="_ => dmgInput?.focus()">
-            Damage:
-            <input ref="dmgInput" v-model.number="weapon.damage" type="number" />
-        </div>
-
-        <div class="mh-number grid-cols-[auto_1fr_auto]" @click="_ => affInput?.focus()">
-            Affinity:
-            <input ref="affInput" v-model.number="displayedAffinity" type="number" />
-            %
-        </div>
-    </section>
+    </div>
 </template>
 
 <style scoped>
 @reference "../styles/main.css";
 input {
     width: 100%;
-    text-align: end;
+    text-align: center;
 }
 
 .mh-number {
     /* width: 200px; */
     display: grid;
-    border: 1px solid var(--color-zinc-500);
+    align-items: center;
+    width: 100px;
     padding: --spacing(0.5);
-    @apply rounded-sm;
+    font-weight: 700;
+    @apply rounded-full px-3;
+}
+
+.mh-affinity::after {
+    content: "%";
 }
 
 input:focus {
     outline: none;
+}
+
+.mh-weapon {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(max-content);
+    gap: --spacing(5);
 }
 </style>

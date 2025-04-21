@@ -20,9 +20,10 @@ export default defineConfigWithVueTs(
         rules: {
             // "@typescript-eslint/explicit-function-return-type": "error"
             "@typescript-eslint/consistent-type-definitions": "off",
-            "@typescript-eslint/no-unused-vars": "warn",
             "@typescript-eslint/non-nullable-type-assertion-style": "off",
             "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/no-unused-vars": "warn",
+            "no-unused-vars": "off",
         },
         languageOptions: {
             parserOptions: {

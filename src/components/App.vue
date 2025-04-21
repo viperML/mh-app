@@ -65,7 +65,7 @@ const myEfr = computed(() => {
 
 <template>
     <main class="grid grid-cols-1 gap-10">
-        <div class="mh-card grid grid-cols-1 gap-4">
+        <div class="mh-card grid grid-cols-1 gap-4 mh-equipment">
             <WeaponSelect v-model:weapon="weapon" :decoration-display />
 
             <ArmorSelect
@@ -83,7 +83,7 @@ const myEfr = computed(() => {
             </span>
         </div>
 
-        <div class="mh-card">
+        <div class="mh-card break-all">
             <div>EFR: {{ myEfr }}</div>
         </div>
 
@@ -93,10 +93,29 @@ const myEfr = computed(() => {
     </main>
 </template>
 
-<style>
+<style scoped>
 @reference "../styles/main.css";
 .mh-card {
     background-color: black;
-    padding: --spacing(5);
+    padding: --spacing(2);
+}
+
+.mh-equipment > * {
+    position: relative;
+}
+
+.mh-equipment > div:not(:last-child)::after {
+    content: "";
+    bottom: -10px;
+    left: 0;
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-zinc-800);
+}
+
+main {
+    width: min(100%, 600px);
 }
 </style>

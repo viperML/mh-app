@@ -73,51 +73,6 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div class="grid grid-cols-2 items-center bg-zinc-900 p-10 gap-5" v-for="kind of armorKinds" v-bind:key="kind">
-        <button
-            class="row-span-full"
-            @click="
-                () => {
-                    showArmorsFor = kind;
-                    setArmor = (armor: ArmorPiece) => {
-                        selectedArmor[kind] = armor;
-                        selectedDecorations[kind] = {
-                            0: undefined,
-                            1: undefined,
-                            2: undefined,
-                        };
-                    };
-                    armorDialog?.showModal();
-                }
-            "
-        >
-            <ArmorCard :armor="selectedArmor[kind]" />
-        </button>
-
-        <div class="grid grid-cols-1 gap-5 h-max">
-            <button
-                v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
-                v-show="slotLevel"
-                v-bind:key="slotId"
-                @click="
-                    () => {
-                        showDecorationsFor = slotLevel;
-                        setDecoration = (deco: Decoration) => {
-                            selectedDecorations[kind][slotId] = deco;
-                        };
-                        decoDialog?.showModal();
-                    }
-                "
-            >
-                <DecorationBtn
-                    :decoration="selectedDecorations[kind][slotId]"
-                    :decoration-display="props.decorationDisplay"
-                    :slot-size="slotLevel"
-                />
-            </button>
-        </div>
-    </div>
-
     <dialog ref="armorDialog" closedby="any">
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
         <button
@@ -163,6 +118,51 @@ watchEffect(() => {
             <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
         </button>
     </dialog>
+
+    <div class="grid grid-cols-2 items-center p-10" v-for="kind of armorKinds" v-bind:key="kind">
+        <button
+            class="row-span-full"
+            @click="
+                () => {
+                    showArmorsFor = kind;
+                    setArmor = (armor: ArmorPiece) => {
+                        selectedArmor[kind] = armor;
+                        selectedDecorations[kind] = {
+                            0: undefined,
+                            1: undefined,
+                            2: undefined,
+                        };
+                    };
+                    armorDialog?.showModal();
+                }
+            "
+        >
+            <ArmorCard :armor="selectedArmor[kind]" />
+        </button>
+
+        <div class="grid grid-cols-1 gap-5 h-max">
+            <button
+                v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
+                v-show="slotLevel"
+                v-bind:key="slotId"
+                @click="
+                    () => {
+                        showDecorationsFor = slotLevel;
+                        setDecoration = (deco: Decoration) => {
+                            selectedDecorations[kind][slotId] = deco;
+                        };
+                        decoDialog?.showModal();
+                    }
+                "
+            >
+                <DecorationBtn
+                    :decoration="selectedDecorations[kind][slotId]"
+                    :decoration-display="props.decorationDisplay"
+                    :slot-size="slotLevel"
+                />
+            </button>
+        </div>
+    </div>
 </template>
 
 <style scoped>
