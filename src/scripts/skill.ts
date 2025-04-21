@@ -29,11 +29,9 @@ const rawSkillProjection: Projection<RawSkill> = {
     kind: true,
     "ranks.id": false,
     "ranks.description": false,
-    "ranks.level": false,
+    "ranks.level": true,
     "ranks.name": false,
     "ranks.skill": false,
-    // @ts-expect-error All rank information is removed
-    ranks: false,
 };
 
 export type SkillRank2 = {
@@ -45,6 +43,7 @@ export type Skill2 = {
     id: number;
     name: string;
     kind: SkillKind;
+    maxRank: number;
 };
 
 export async function getSkills(): Promise<Map<number, Skill2>> {
@@ -57,10 +56,13 @@ export async function getSkills(): Promise<Map<number, Skill2>> {
     const res = new Map<number, Skill2>();
 
     for (const s of rawSkills) {
+        const maxRank = s.ranks.reduce((max, { level }) => Math.max(max, level), 1);
+
         res.set(s.id, {
             id: s.id,
             kind: s.kind,
             name: s.name,
+            maxRank,
         });
     }
 

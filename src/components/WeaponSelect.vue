@@ -53,7 +53,7 @@ import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
     <div class="mh-weapon">
         <h2 class="">Custom Weapon</h2>
 
-        <div class="flex flex-row gap-5">
+        <div class="grid grid-cols-3 justify-items-center">
             <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-100" @click="_ => dmgInput?.focus()">
                 <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
                 <input ref="dmgInput" v-model.number="weapon.damage" type="number" />

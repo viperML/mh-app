@@ -8,7 +8,8 @@
         "dev": "astro dev --open",
         "build": "astro build",
         "test": "eslint . && vitest run",
-        "pretty": "prettier --write ."
+        "pretty": "prettier --write .",
+        "preview": "astro preview --open"
     },
     "dependencies": {
         "vue": "^3.5.13"

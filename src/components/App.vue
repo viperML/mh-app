@@ -65,7 +65,7 @@ const myEfr = computed(() => {
 
 <template>
     <main class="grid grid-cols-1 gap-10">
-        <div class="mh-card grid grid-cols-1 gap-4 mh-equipment">
+        <div class="mh-card grid grid-cols-1 gap-10 mh-equipment">
             <WeaponSelect v-model:weapon="weapon" :decoration-display />
 
             <ArmorSelect

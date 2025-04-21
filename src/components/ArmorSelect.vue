@@ -119,26 +119,28 @@ watchEffect(() => {
         </button>
     </dialog>
 
-    <div class="grid grid-cols-2 items-center p-10" v-for="kind of armorKinds" v-bind:key="kind">
-        <button
-            class="row-span-full"
-            @click="
-                () => {
-                    showArmorsFor = kind;
-                    setArmor = (armor: ArmorPiece) => {
-                        selectedArmor[kind] = armor;
-                        selectedDecorations[kind] = {
-                            0: undefined,
-                            1: undefined,
-                            2: undefined,
-                        };
+    <button
+        class="grid grid-cols-1 gap-4 items-center"
+        v-for="kind of armorKinds"
+        v-bind:key="kind"
+        @click="
+            () => {
+                showArmorsFor = kind;
+                setArmor = (armor: ArmorPiece) => {
+                    selectedArmor[kind] = armor;
+                    selectedDecorations[kind] = {
+                        0: undefined,
+                        1: undefined,
+                        2: undefined,
                     };
-                    armorDialog?.showModal();
-                }
-            "
-        >
+                };
+                armorDialog?.showModal();
+            }
+        "
+    >
+        <div class="row-span-full">
             <ArmorCard :armor="selectedArmor[kind]" />
-        </button>
+        </div>
 
         <div class="grid grid-cols-1 gap-5 h-max">
             <button
@@ -162,7 +164,7 @@ watchEffect(() => {
                 />
             </button>
         </div>
-    </div>
+    </button>
 </template>
 
 <style scoped>
