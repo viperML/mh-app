@@ -4,6 +4,7 @@ import type { Weapon } from "../scripts/weapon";
 import { parseNumber } from "../scripts/util";
 import DecorationBtn from "./DecorationBtn.vue";
 import type { DecorationDisplay } from "./App.vue";
+import { GSIcon } from "../assets/weaponIcons";
 
 const props = defineProps<{
     decorationDisplay: DecorationDisplay;
@@ -50,22 +51,28 @@ import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
 </script>
 
 <template>
-    <div class="mh-weapon">
-        <h2 class="">Custom Weapon</h2>
+    <div class="mh-weapon bg-zinc-800 p-4 rounded-2xl">
+        <div class="flex flex-row items-center gap-2">
+            <img :src="GSIcon.src" :width="20" :height="20" />
+            <h2>Custom Weapon</h2>
+        </div>
 
-        <div class="grid grid-cols-3 justify-items-center">
-            <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-100" @click="_ => dmgInput?.focus()">
+        <div class="flex flex-row gap-2 justify-items-center">
+            <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-200" @click="_ => dmgInput?.focus()">
                 <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
                 <input ref="dmgInput" v-model.number="weapon.damage" type="number" />
             </div>
 
-            <div class="mh-number mh-affinity grid-cols-[auto_1fr_auto] bg-purple-950 text-purple-100" @click="_ => affInput?.focus()">
+            <div
+                class="mh-number mh-affinity grid-cols-[auto_1fr_auto] bg-purple-950 text-purple-200"
+                @click="_ => affInput?.focus()"
+            >
                 <img :src="AffinityIcon.src" :width="iconSize" :height="iconSize" />
                 <input ref="affInput" v-model.number="displayedAffinity" type="number" />
             </div>
         </div>
 
-        <div class="grid gap-4">
+        <div class="grid gap-1">
             <DecorationBtn :decorationDisplay v-for="slotId of [1, 2, 3]" v-bind:key="slotId" />
         </div>
     </div>
@@ -100,6 +107,6 @@ input:focus {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: repeat(max-content);
-    gap: --spacing(5);
+    gap: --spacing(2);
 }
 </style>

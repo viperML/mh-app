@@ -11,9 +11,9 @@ const props = defineProps<{
 
 const displayName = computed(() => {
     if (props.decorationDisplay === "name") {
-        return props.decoration?.name ?? "Not selected";
+        return props.decoration?.name ?? "No decoration";
     } else {
-        return props.decoration?.skills.map(skillRank => skillRank.skill.name).join("/") ?? "Not selected";
+        return props.decoration?.skills.map(skillRank => skillRank.skill.name).join("/") ?? "No decoration";
     }
 });
 
@@ -26,7 +26,7 @@ const rectX = (n: number) => (n-1) * rectSpacing + 2;
 </script>
 
 <template>
-    <div class="p-0.5 text-sm rounded-sm border-1 bg-zinc-900 text-neutral-200 text-start flex items-center gap-1">
+    <div class="py-0.5 px-1 text-sm rounded-sm bg-zinc-900 text-neutral-200 text-start flex items-center gap-1">
         <svg width="24" height="16" viewBox="0 0 24 16" class="flex-shrink-0">
             <!-- Slot level indicators -->
             <rect

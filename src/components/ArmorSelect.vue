@@ -70,6 +70,11 @@ watchEffect(() => {
         decorations: selectedDecorations,
     });
 });
+
+function shouldShowDecorations(armor: ArmorPiece) {
+    return Object.values(armor.slots).some((slot: number) => slot > 0);
+}
+
 </script>
 
 <template>
@@ -99,7 +104,7 @@ watchEffect(() => {
                 }
             "
         >
-            <ArmorCard :armor="armor" />
+            <ArmorCard :armor="armor" :kind="armor.kind" />
         </button>
     </dialog>
 
@@ -119,30 +124,29 @@ watchEffect(() => {
         </button>
     </dialog>
 
-    <button
-        class="grid grid-cols-1 gap-4 items-center"
-        v-for="kind of armorKinds"
-        v-bind:key="kind"
-        @click="
-            () => {
-                showArmorsFor = kind;
-                setArmor = (armor: ArmorPiece) => {
-                    selectedArmor[kind] = armor;
-                    selectedDecorations[kind] = {
-                        0: undefined,
-                        1: undefined,
-                        2: undefined,
-                    };
-                };
-                armorDialog?.showModal();
-            }
-        "
-    >
-        <div class="row-span-full">
-            <ArmorCard :armor="selectedArmor[kind]" />
-        </div>
+    <div class="grid grid-cols-1 items-center bg-zinc-800 p-4 gap-3 rounded-2xl" v-for="kind of armorKinds" v-bind:key="kind">
+        <button class="row-span-full">
+            <ArmorCard
+                :kind="kind"
+                :armor="selectedArmor[kind]"
+                @click="
+                    () => {
+                        showArmorsFor = kind;
+                        setArmor = (armor: ArmorPiece) => {
+                            selectedArmor[kind] = armor;
+                            selectedDecorations[kind] = {
+                                0: undefined,
+                                1: undefined,
+                                2: undefined,
+                            };
+                        };
+                        armorDialog?.showModal();
+                    }
+                "
+            />
+        </button>
 
-        <div class="grid grid-cols-1 gap-5 h-max">
+        <div class="grid grid-cols-1 gap-1 h-max" v-show="selectedArmor[kind] && shouldShowDecorations(selectedArmor[kind])">
             <button
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
@@ -164,7 +168,7 @@ watchEffect(() => {
                 />
             </button>
         </div>
-    </button>
+    </div>
 </template>
 
 <style scoped>
