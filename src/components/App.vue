@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import ArmorSelect from "./ArmorSelect.vue";
 
-import { getSkills, mergeSkillRanks, mergeSkillsRanksInto, type MergedSkills } from "../scripts/skill";
+import {
+    getSkills,
+    mergeSkillRanks,
+    mergeSkillsRanksInto,
+    mergeSkillsRanksInto2,
+    type MergedSkills,
+    type MergedSkills2,
+} from "../scripts/skill";
 import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
 import { computed, ref, watchEffect } from "vue";
@@ -9,6 +16,7 @@ import type { ArmorEmits } from "./ArmorSelect.vue";
 import { efr } from "../scripts/efr";
 import WeaponSelect from "./WeaponSelect.vue";
 import type { Weapon } from "../scripts/weapon";
+import SkillDisplay from "./SkillDisplay.vue";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
@@ -28,11 +36,11 @@ function swapDecorationDisplay() {
 }
 
 const mergedSkills = computed(() => {
-    const res: MergedSkills = new Map();
+    const res: MergedSkills2 = new Map();
     if (armorEmits.value?.armor) {
         for (const [, piece] of Object.entries(armorEmits.value.armor)) {
             if (piece) {
-                mergeSkillsRanksInto(res, ...piece.skills);
+                mergeSkillsRanksInto2(res, ...piece.skills);
             }
         }
     }
@@ -40,7 +48,7 @@ const mergedSkills = computed(() => {
         for (const [, decos] of Object.entries(armorEmits.value.decorations)) {
             for (const [, deco] of Object.entries(decos)) {
                 if (deco) {
-                    mergeSkillsRanksInto(res, ...deco.skills);
+                    mergeSkillsRanksInto2(res, ...deco.skills);
                 }
             }
         }
@@ -50,17 +58,17 @@ const mergedSkills = computed(() => {
 
 const weapon = ref<Weapon>();
 
-const myEfr = computed(() => {
-    if (weapon.value) {
-        return efr({
-            attack: weapon.value.damage,
-            affinity: weapon.value.affinity,
-            skills: mergedSkills.value,
-        });
-    } else {
-        return undefined;
-    }
-});
+// const myEfr = computed(() => {
+//     if (weapon.value) {
+//         return efr({
+//             attack: weapon.value.damage,
+//             affinity: weapon.value.affinity,
+//             skills: mergedSkills.value,
+//         });
+//     } else {
+//         return undefined;
+//     }
+// });
 </script>
 
 <template>
@@ -77,14 +85,18 @@ const myEfr = computed(() => {
             />
         </div>
 
-        <div class="mh-card">
-            <span class="p-2 bg-teal-950 text-white" v-for="[skill, level] of mergedSkills" v-bind:key="skill">
-                {{ skill }} @ {{ level }}
-            </span>
-        </div>
+        <div class="mh-card bg-zinc-800 p-4 rounded-2xl">
+            <div class="grid grid-cols-2">
+                <SkillDisplay
+                    v-for="[skillId, level] of mergedSkills"
+                    v-bind:key="String(skillId)"
+                    :skill-max-rank="allSkills.get(skillId)!.maxRank"
+                    :skill-rank="level"
+                    :skill-name="allSkills.get(skillId)!.name"
+                />
+            </div>
 
-        <div class="mh-card break-all">
-            <div>EFR: {{ myEfr }}</div>
+            <!-- <div>EFR: {{ myEfr }}</div> -->
         </div>
 
         <!-- <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">

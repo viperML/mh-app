@@ -4,6 +4,7 @@
     font-family: "Inter Variable", monospace, system-ui;
     background-color: #121212;
     color: white;
+    word-break: break-all;
 
     --color-text-hover: #f1f1f1;
 }
