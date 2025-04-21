@@ -124,7 +124,7 @@ function shouldShowDecorations(armor: ArmorPiece) {
         </button>
     </dialog>
 
-    <div class="grid grid-cols-1 items-center bg-zinc-800 p-4 gap-3 rounded-2xl" v-for="kind of armorKinds" v-bind:key="kind">
+    <div class="grid grid-cols-1 lg:grid-cols-[auto_200px] items-start bg-zinc-800 p-2 gap-y-3 gap-x-5 rounded-xl" v-for="kind of armorKinds" v-bind:key="kind">
         <button class="row-span-full">
             <ArmorCard
                 :kind="kind"

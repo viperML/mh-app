@@ -51,24 +51,26 @@ import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
 </script>
 
 <template>
-    <div class="mh-weapon bg-zinc-800 p-4 rounded-2xl">
-        <div class="flex flex-row items-center gap-2">
-            <img :src="GSIcon.src" :width="20" :height="20" />
-            <h2>Custom Weapon</h2>
-        </div>
-
-        <div class="flex flex-row gap-2 justify-items-center">
-            <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-200" @click="_ => dmgInput?.focus()">
-                <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
-                <input ref="dmgInput" v-model.number="weapon.damage" type="number" />
+    <div class="mh-weapon bg-zinc-800 p-2 rounded-xl grid grid-cols-1 gap-y-2 lg:grid-cols-[auto_200px]">
+        <div class="flex gap-2 flex-col">
+            <div class="flex flex-row items-center gap-2">
+                <img :src="GSIcon.src" :width="20" :height="20" />
+                <h2>Custom Weapon</h2>
             </div>
 
-            <div
-                class="mh-number mh-affinity grid-cols-[auto_1fr_auto] bg-purple-950 text-purple-200"
-                @click="_ => affInput?.focus()"
-            >
-                <img :src="AffinityIcon.src" :width="iconSize" :height="iconSize" />
-                <input ref="affInput" v-model.number="displayedAffinity" type="number" />
+            <div class="flex flex-row gap-2 justify-items-center">
+                <div class="mh-number grid-cols-[auto_1fr] bg-red-950 text-red-200" @click="_ => dmgInput?.focus()">
+                    <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
+                    <input ref="dmgInput" v-model.number="weapon.damage" type="number" />
+                </div>
+
+                <div
+                    class="mh-number mh-affinity grid-cols-[auto_1fr_auto] bg-purple-950 text-purple-200"
+                    @click="_ => affInput?.focus()"
+                >
+                    <img :src="AffinityIcon.src" :width="iconSize" :height="iconSize" />
+                    <input ref="affInput" v-model.number="displayedAffinity" type="number" />
+                </div>
             </div>
         </div>
 
@@ -101,12 +103,5 @@ input {
 
 input:focus {
     outline: none;
-}
-
-.mh-weapon {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(max-content);
-    gap: --spacing(2);
 }
 </style>

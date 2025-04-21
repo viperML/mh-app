@@ -72,7 +72,7 @@ const weapon = ref<Weapon>();
 </script>
 
 <template>
-    <main class="grid grid-cols-1 gap-10">
+    <main class="grid grid-cols-1 lg:grid-cols-[500px_300px] gap-y-10 gap-x-4">
         <div class="mh-card grid grid-cols-1 gap-3 mh-equipment">
             <WeaponSelect v-model:weapon="weapon" :decoration-display />
 
@@ -85,7 +85,9 @@ const weapon = ref<Weapon>();
             />
         </div>
 
-        <div class="mh-card bg-zinc-800 p-4 rounded-2xl">
+        <div class="mh-card bg-zinc-800 p-4 rounded-2xl h-fit">
+            <h2 class="mb-3">Stats</h2>
+
             <div class="grid grid-cols-2">
                 <SkillDisplay
                     v-for="[skillId, level] of mergedSkills"
@@ -107,22 +109,4 @@ const weapon = ref<Weapon>();
 
 <style scoped>
 @reference "../styles/main.css";
-/* .mh-equipment > * {
-    position: relative;
-}
-
-.mh-equipment > div:not(:last-child)::after {
-    content: "";
-    bottom: -10px;
-    left: 0;
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 3px;
-    background-color: var(--color-zinc-800);
-} */
-
-main {
-    width: min(100%, 600px);
-}
 </style>

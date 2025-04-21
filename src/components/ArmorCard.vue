@@ -19,8 +19,8 @@ const iconSize = 20;
 </script>
 
 <template>
-    <div class="text-white grid grid-cols-2 items-center min-w-6">
-        <div class="col-span-full justify-self-start flex flex-row items-center gap-3">
+    <div class="text-white grid grid-cols-[auto_min-content] items-center min-w-6">
+        <div class="col-span-full justify-self-start flex flex-row items-center gap-2">
             <img :width="iconSize" :height="iconSize" :src="armorIcons[props.kind].src" />
             <h2 :class="props.armor ? '' : 'text-neutral-500'">
                 {{ props.armor?.name ?? "Not set" }}

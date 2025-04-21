@@ -10,16 +10,20 @@ const rectWidth = 8;
 const rectHeight = 16;
 const rectGap = 2;
 const rectSpacing = rectWidth + rectGap; // Total space each rectangle occupies
+
+// Calculate the actual SVG width needed based on skill max rank (capped at 5)
+const maxDisplayedRanks = Math.min(5, props.skillMaxRank);
+const svgWidth = maxDisplayedRanks * rectSpacing;
 </script>
 
 <template>
     <span class="text-neutral-500 justify-self-start">{{ skillName }}</span>
 
-    <svg width="100" height="20" viewBox="0 0 100 20" class="justify-self-end">
+    <svg :width="svgWidth" height="20" :viewBox="`0 0 ${svgWidth} 20`" class="justify-self-end">
         <rect
-            v-for="n in skillMaxRank"
+            v-for="n in Math.min(5, skillMaxRank)"
             :key="n"
-            :x="100 - rectWidth - (n - 1) * rectSpacing"
+            :x="svgWidth - rectWidth - (n - 1) * rectSpacing"
             y="2"
             :width="rectWidth"
             :height="rectHeight"

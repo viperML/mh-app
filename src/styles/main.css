@@ -2,7 +2,7 @@
 
 :root {
     font-family: "Inter Variable", monospace, system-ui;
-    background-color: #121212;
+    background-color: var(--color-stone-950);
     color: white;
     word-break: break-all;
 
