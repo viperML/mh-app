@@ -68,33 +68,33 @@ watchEffect(() => {
     emits("update:armor", {
         armor: selectedArmor,
         decorations: selectedDecorations,
-    })
-})
+    });
+});
 </script>
 
 <template>
-    <article class="grid grid-cols-1 gap-10 m-10">
-        <div class="grid grid-cols-2 grid-rows-3 gap-4" v-for="kind of armorKinds" v-bind:key="kind">
-            <button
-                class="row-span-full"
-                @click="
-                    () => {
-                        showArmorsFor = kind;
-                        setArmor = (armor: ArmorPiece) => {
-                            selectedArmor[kind] = armor;
-                            selectedDecorations[kind] = {
-                                0: undefined,
-                                1: undefined,
-                                2: undefined,
-                            };
+    <div class="grid grid-cols-2 items-center bg-zinc-900 p-10 gap-5" v-for="kind of armorKinds" v-bind:key="kind">
+        <button
+            class="row-span-full"
+            @click="
+                () => {
+                    showArmorsFor = kind;
+                    setArmor = (armor: ArmorPiece) => {
+                        selectedArmor[kind] = armor;
+                        selectedDecorations[kind] = {
+                            0: undefined,
+                            1: undefined,
+                            2: undefined,
                         };
-                        armorDialog?.showModal();
-                    }
-                "
-            >
-                <ArmorCard :armor="selectedArmor[kind]" />
-            </button>
+                    };
+                    armorDialog?.showModal();
+                }
+            "
+        >
+            <ArmorCard :armor="selectedArmor[kind]" />
+        </button>
 
+        <div class="grid grid-cols-1 gap-5 h-max">
             <button
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
@@ -116,7 +116,7 @@ watchEffect(() => {
                 />
             </button>
         </div>
-    </article>
+    </div>
 
     <dialog ref="armorDialog" closedby="any">
         <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>

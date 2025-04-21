@@ -46,10 +46,10 @@ const affInput = useTemplateRef("affInput");
 </script>
 
 <template>
-    <div class="grid grid-cols-2 grid-rows-3 items-center gap-0.5 bg-zinc-800 p-4 gap-x-4 rounded-2xl">
-        <span class="">Custom Weapon</span>
+    <section class="grid grid-cols-2 grid-rows-3 items-center bg-zinc-900 p-10 gap-5">
+        <h2 class="">Custom Weapon</h2>
 
-        <div class="row-span-full col-start-2 grid gap-1">
+        <div class="row-span-full col-start-2 grid gap-4">
             <DecorationBtn :decorationDisplay v-for="slotId of [1, 2, 3]" v-bind:key="slotId" />
         </div>
 
@@ -63,7 +63,7 @@ const affInput = useTemplateRef("affInput");
             <input ref="affInput" v-model.number="displayedAffinity" type="number" />
             %
         </div>
-    </div>
+    </section>
 </template>
 
 <style scoped>

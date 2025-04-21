@@ -7,12 +7,12 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="bg-zinc-800 p-7 rounded-md shadow-md">
-        <span class="m-2">
+    <div class="p-7 bg-zinc-800 text-white">
+        <h2 class="m-2">
             {{ props.armor?.name ?? "Not set" }}
-        </span>
-        <div class="text-xs m-2 flex flex-row gap-4">
-            <span v-for="skillRank of props.armor?.skills" v-bind:key="String(skillRank.skill.id)">{{ skillRank.skill.name }}</span>
-        </div>
+        </h2>
+        <ul class="text-xs m-2 flex flex-row gap-4">
+            <li v-for="skillRank of props.armor?.skills" v-bind:key="String(skillRank.skill.id)">{{ skillRank.skill.name }}</li>
+        </ul>
     </div>
 </template>

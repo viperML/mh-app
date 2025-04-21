@@ -65,7 +65,7 @@ const myEfr = computed(() => {
 
 <template>
     <main class="grid grid-cols-1 gap-10">
-        <div class="mh-card">
+        <div class="mh-card grid grid-cols-1 gap-4">
             <WeaponSelect v-model:weapon="weapon" :decoration-display />
 
             <ArmorSelect
@@ -96,8 +96,7 @@ const myEfr = computed(() => {
 <style>
 @reference "../styles/main.css";
 .mh-card {
-    @apply rounded-lg;
     background-color: black;
-    padding: --spacing(2);
+    padding: --spacing(5);
 }
 </style>
