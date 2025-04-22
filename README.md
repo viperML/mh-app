@@ -42,6 +42,7 @@
 - [ ] Fix dialogs
 
     - [ ] Remove click-through
+    - [ ] Add search bar
 
 - General UI
     - [ ] Max-width on mobile
