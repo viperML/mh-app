@@ -56,6 +56,13 @@ const mergedSkills = computed(() => {
     return res;
 });
 
+watchEffect(() => {
+    for (const [skillId, skillRank] of mergedSkills.value) {
+        console.log(allSkills.get(skillId)?.name, "=>", skillRank);
+        console.log(allSkills.get(skillId)?.iconKind);
+    }
+});
+
 const weapon = ref<Weapon>();
 
 // const myEfr = computed(() => {
@@ -92,9 +99,10 @@ const weapon = ref<Weapon>();
                 <SkillDisplay
                     v-for="[skillId, level] of mergedSkills"
                     v-bind:key="String(skillId)"
-                    :skill-max-rank="allSkills.get(skillId)!.maxRank"
-                    :skill-rank="level"
-                    :skill-name="allSkills.get(skillId)!.name"
+                    :skill-rank="{
+                        level,
+                        skill: allSkills.get(skillId)!
+                    }"
                 />
             </div>
 

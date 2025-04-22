@@ -1,58 +1,100 @@
 <script setup lang="ts">
+import type { SkillRank2 } from "../scripts/skill";
+
 const props = defineProps<{
-    skillName: string;
-    skillRank: number;
-    skillMaxRank: number;
+    skillRank: SkillRank2;
 }>();
 
 // Configuration for the skill rank rectangles
-const rectWidth = 8;
-const rectHeight = 16;
+const rectWidth = 10;
+const rectHeight = 12;
 const rectGap = 2;
+const rectRadius = 4;
 const rectSpacing = rectWidth + rectGap; // Total space each rectangle occupies
 
-// Calculate the actual SVG width needed based on skill max rank (capped at 5)
-const maxDisplayedRanks = Math.min(5, props.skillMaxRank);
+const maxDisplayedRanks = Math.max(props.skillRank.level, props.skillRank.skill.maxRank);
 const svgWidth = maxDisplayedRanks * rectSpacing;
 
 // Function to determine rectangle class based on rank
 const getRectClass = (index: number) => {
-    if (index > props.skillMaxRank) {
-        return 'fill-overflow'; // Exceeds max rank
-    } else if (index <= props.skillRank) {
-        return 'fill-active'; // Within valid range and active
+    if (index > props.skillRank.skill.maxRank) {
+        return `fill-overflow fill-skill-${props.skillRank.skill.iconKind}`;
+    } else if (index <= props.skillRank.level) {
+        return `fill-skill-${props.skillRank.skill.iconKind}`;
     } else {
-        return 'fill-inactive'; // Inactive
+        return "fill-inactive"; // Inactive
     }
 };
 </script>
 
 <template>
-    <span class="text-neutral-500 justify-self-start">{{ skillName }}</span>
+    <span class="text-neutral-500 text-sm justify-self-start">{{ skillRank.skill.name }}</span>
 
-    <svg :width="svgWidth" height="20" :viewBox="`0 0 ${svgWidth} 20`" class="justify-self-end">
+    <svg :width="svgWidth" :height="rectHeight + 2" :viewBox="`0 0 ${svgWidth} ${rectHeight}`" class="justify-self-end">
         <rect
-            v-for="n in Math.min(5, skillMaxRank)"
+            v-for="n in maxDisplayedRanks"
             :key="n"
             :x="svgWidth - rectWidth - (n - 1) * rectSpacing"
-            y="2"
             :width="rectWidth"
             :height="rectHeight"
-            rx="2"
+            :rx="rectRadius"
             :class="getRectClass(n)"
         />
+        <!-- y="2" -->
     </svg>
 </template>
 
 <style scoped>
 @reference "../styles/main.css";
-.fill-active {
-    fill: var(--color-amber-500);
-}
 .fill-inactive {
     fill: var(--color-zinc-700);
 }
 .fill-overflow {
+    stroke: var(--color-red-800);
+    stroke-width: 2px;
+    /* fill: none !important; */
+}
+
+.fill-skill-affinity {
+    fill: var(--color-purple-500);
+}
+.fill-skill-attack {
     fill: var(--color-red-500);
+}
+.fill-skill-defense {
+    fill: var(--color-blue-500);
+}
+.fill-skill-element {
+    fill: var(--color-teal-500);
+}
+.fill-skill-gathering {
+    fill: var(--color-green-500);
+}
+.fill-skill-group {
+    fill: var(--color-pink-500);
+}
+.fill-skill-handicraft {
+    fill: var(--color-yellow-500);
+}
+.fill-skill-health {
+    fill: var(--color-red-500);
+}
+.fill-skill-item {
+    fill: var(--color-amber-500);
+}
+.fill-skill-offense {
+    fill: var(--color-pink-800);
+}
+.fill-skill-ranged {
+    fill: var(--color-lime-500);
+}
+.fill-skill-set {
+    fill: var(--color-violet-500);
+}
+.fill-skill-stamina {
+    fill: var(--color-cyan-500);
+}
+.fill-skill-utility {
+    fill: var(--color-stone-500);
 }
 </style>

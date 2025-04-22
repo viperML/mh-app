@@ -27,13 +27,11 @@ const iconSize = 20;
             </h2>
         </div>
 
-        <div class="w-full h-2 col-span-full" v-show="!noSkills"></div>
+        <div class="w-full h-1 col-span-full" v-show="!noSkills"></div>
 
         <template v-for="skillRank of props.armor?.skills" v-bind:key="String(skillRank.skill.id)">
             <SkillDisplay
-                :skillMaxRank="skillRank.skill.maxRank"
-                :skillName="skillRank.skill.name"
-                :skillRank="skillRank.level"
+                :skillRank="skillRank"
             />
         </template>
     </div>

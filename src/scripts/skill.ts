@@ -20,7 +20,28 @@ export interface RawSkill {
     description: string;
     ranks: RawSkillRank[];
     kind: SkillKind;
+    icon: SkillIcon;
 }
+
+interface SkillIcon {
+    kind: SkillIconKind;
+}
+
+export type SkillIconKind =
+    | "affinity"
+    | "attack"
+    | "defense"
+    | "element"
+    | "gathering"
+    | "group"
+    | "handicraft"
+    | "health"
+    | "item"
+    | "offense"
+    | "ranged"
+    | "set"
+    | "stamina"
+    | "utility";
 
 const rawSkillProjection: Projection<RawSkill> = {
     id: true,
@@ -32,6 +53,7 @@ const rawSkillProjection: Projection<RawSkill> = {
     "ranks.level": true,
     "ranks.name": false,
     "ranks.skill": false,
+    "icon.kind": true,
 };
 
 export type SkillRank2 = {
@@ -44,6 +66,7 @@ export type Skill2 = {
     name: string;
     kind: SkillKind;
     maxRank: number;
+    iconKind: SkillIconKind;
 };
 
 export async function getSkills(): Promise<Map<number, Skill2>> {
@@ -63,6 +86,7 @@ export async function getSkills(): Promise<Map<number, Skill2>> {
             kind: s.kind,
             name: s.name,
             maxRank,
+            iconKind: s.icon.kind,
         });
     }
 
