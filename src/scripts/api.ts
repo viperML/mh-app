@@ -68,7 +68,7 @@ interface CharmRank {
 const charmProjection: Projection<Charm> = {
     id: true,
     "ranks.level": true,
-    "ranks.name": false,
+    "ranks.name": true,
     "ranks.description": false,
     "ranks.skills.id": false,
     "ranks.skills.level": true,
