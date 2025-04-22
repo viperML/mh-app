@@ -1,39 +1,21 @@
 <script setup lang="ts">
 import ArmorSelect from "./ArmorSelect.vue";
 
-import {
-    getSkills,
-    mergeSkillRanks,
-    mergeSkillsRanksInto,
-    mergeSkillsRanksInto2,
-    type MergedSkills,
-    type MergedSkills2,
-} from "../scripts/skill";
+import { getSkills, mergeSkillsRanksInto2, type MergedSkills2 } from "../scripts/skill";
 import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
-import { computed, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watchEffect } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
-import { efr } from "../scripts/efr";
 import WeaponSelect from "./WeaponSelect.vue";
 import type { Weapon } from "../scripts/weapon";
 import SkillDisplay from "./SkillDisplay.vue";
+import GlobalSettings, { type DecorationDisplay } from "./GlobalSettings.vue";
+import { readSettings } from "../scripts/settings";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
 
 const armorEmits = ref<ArmorEmits>();
-
-export type DecorationDisplay = "name" | "skills";
-
-const decorationDisplay = ref((localStorage.getItem("decoration-display") ?? "name") as DecorationDisplay);
-function swapDecorationDisplay() {
-    if (decorationDisplay.value === "name") {
-        decorationDisplay.value = "skills";
-    } else {
-        decorationDisplay.value = "name";
-    }
-    localStorage.setItem("decoration-display", decorationDisplay.value);
-}
 
 const mergedSkills = computed(() => {
     const res: MergedSkills2 = new Map();
@@ -65,29 +47,23 @@ watchEffect(() => {
 
 const weapon = ref<Weapon>();
 
-// const myEfr = computed(() => {
-//     if (weapon.value) {
-//         return efr({
-//             attack: weapon.value.damage,
-//             affinity: weapon.value.affinity,
-//             skills: mergedSkills.value,
-//         });
-//     } else {
-//         return undefined;
-//     }
-// });
+const settings = ref(readSettings());
 </script>
 
 <template>
     <main class="grid grid-cols-1 lg:grid-cols-[500px_300px] gap-y-10 gap-x-4">
+        <div class="col-span-full w-max justify-self-center">
+            <GlobalSettings v-model="settings" />
+        </div>
+
         <div class="mh-card grid grid-cols-1 gap-3 mh-equipment">
-            <WeaponSelect v-model:weapon="weapon" :decoration-display />
+            <WeaponSelect v-model:weapon="weapon" :decoration-display="settings.decorationDisplay" />
 
             <ArmorSelect
                 :all-armors="allArmors"
                 :all-skills="allSkills"
                 :all-decorations="allDecorations"
-                :decoration-display="decorationDisplay"
+                :decoration-display="settings.decorationDisplay"
                 @update:armor="e => (armorEmits = e)"
             />
         </div>
@@ -101,7 +77,7 @@ const weapon = ref<Weapon>();
                     v-bind:key="String(skillId)"
                     :skill-rank="{
                         level,
-                        skill: allSkills.get(skillId)!
+                        skill: allSkills.get(skillId)!,
                     }"
                 />
             </div>
