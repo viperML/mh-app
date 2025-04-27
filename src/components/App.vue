@@ -17,6 +17,8 @@ import Efr from "./EfrDisplay.vue";
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
 
+console.log("allDecorations", allDecorations);
+
 const armorEmits = ref<ArmorEmits>();
 
 const mergedSkills = computed(() => {
@@ -70,7 +72,7 @@ const myEfr = computed<EfrInfo | undefined>(() => {
         </div>
 
         <div class="mh-card grid grid-cols-1 gap-3 mh-equipment">
-            <WeaponSelect v-model:weapon="weapon" :decoration-display="settings.decorationDisplay" />
+            <WeaponSelect v-model:weapon="weapon" :decoration-display="settings.decorationDisplay" :all-decorations="allDecorations" />
 
             <ArmorSelect
                 :all-armors="allArmors"

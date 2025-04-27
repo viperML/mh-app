@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, useTemplateRef, watchEffect, nextTick, watch } from "vue";
+import { computed, reactive, ref, watchEffect, nextTick, watch } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
 import { parseNumber } from "../scripts/util";
@@ -7,6 +7,7 @@ import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
 import type { DecorationDisplay } from "../scripts/settings";
 import type { Skill } from "../scripts/skill";
+import DecorationSelect from "./DecorationSelect.vue";
 
 const props = defineProps<{
     allSkills: Map<number, Skill>;
@@ -16,7 +17,6 @@ const props = defineProps<{
 }>();
 
 const armorDialog = ref<HTMLDialogElement | null>(null);
-const decoDialog = ref<HTMLDialogElement | null>(null);
 
 const selectedArmor = reactive(
     Object.fromEntries(
@@ -36,9 +36,6 @@ for (const kind of armorKinds) {
 }
 
 const showArmorsFor = ref(armorKinds[0]);
-const setArmor = (armor: ArmorPiece) => {};
-
-const showDecorationsFor = ref(3);
 
 const selectedDecorations = reactive(
     Object.fromEntries(
@@ -54,8 +51,6 @@ const selectedDecorations = reactive(
         }),
     ),
 ) as Record<ArmorKind, Record<DecoSlot, Decoration | undefined>>;
-
-const setDecoration = (decoration: Decoration) => {};
 
 export type ArmorEmits = {
     armor: Record<ArmorKind, ArmorPiece | undefined>;
@@ -101,30 +96,39 @@ watch(
     }
 );
 
-const decoSearchQuery = ref("");
-const decoSearchInputRef = ref<HTMLInputElement | null>(null);
+const decoDialogOpen = ref(false);
+const decoDialogSlotLevel = ref(1);
+const decoDialogKind = ref<ArmorKind | null>(null);
+const decoDialogSlotId = ref<number | null>(null);
 
-const filteredDecorations = computed(() => {
-    const query = decoSearchQuery.value.trim().toLowerCase();
-    return Array.from(props.allDecorations.values()).filter(
-        deco =>
-            deco.kind === "armor" &&
-            deco.slot <= showDecorationsFor.value &&
-            deco.name.toLowerCase().includes(query)
-    );
-});
-
-watch(
-    () => decoDialog.value?.open,
-    (open) => {
-        if (open) {
-            decoSearchQuery.value = "";
-            void nextTick(() => {
-                decoSearchInputRef.value?.focus();
-            });
-        }
+function openDecoDialog(kind: ArmorKind, slotLevel: number, slotId: number) {
+    decoDialogKind.value = kind;
+    decoDialogSlotLevel.value = slotLevel;
+    decoDialogSlotId.value = slotId;
+    decoDialogOpen.value = true;
+}
+function closeDecoDialog() {
+    decoDialogOpen.value = false;
+}
+function updateDecoration(deco: Decoration | undefined) {
+    if (
+        decoDialogKind.value !== null &&
+        decoDialogSlotId.value !== null
+    ) {
+        // Cast slotId to DecoSlot to satisfy type
+        selectedDecorations[decoDialogKind.value][decoDialogSlotId.value as DecoSlot] = deco;
     }
-);
+}
+
+const currentSelectedDecoration = computed(() => {
+    if (
+        decoDialogKind.value !== null &&
+        decoDialogSlotId.value !== null
+    ) {
+        return selectedDecorations[decoDialogKind.value][decoDialogSlotId.value as DecoSlot];
+    }
+    return undefined;
+});
 </script>
 
 <template>
@@ -157,7 +161,14 @@ watch(
                 v-show="showArmorsFor === armor.kind"
                 @click="
                     () => {
-                        setArmor(armor);
+                        if (showArmorsFor) {
+                            selectedArmor[showArmorsFor] = armor;
+                            selectedDecorations[showArmorsFor] = {
+                                0: undefined,
+                                1: undefined,
+                                2: undefined,
+                            };
+                        }
                         armorDialog?.close();
                     }
                 "
@@ -167,31 +178,16 @@ watch(
         </div>
     </dialog>
 
-    <dialog ref="decoDialog" closedby="any">
-        <div class="dialog-container">
-            <input
-                ref="decoSearchInputRef"
-                v-model="decoSearchQuery"
-                type="text"
-                placeholder="Search decoration..."
-                class="bg-zinc-800 text-white p-2 rounded w-full"
-                @keydown.stop
-            />
-            <button
-                class="bg-zinc-800 text-white p-2 rounded w-full hover:bg-zinc-900"
-                @click="() => { setDecoration(undefined); decoDialog?.close(); }"
-            >
-                Remove
-            </button>
-            <button
-                v-for="deco in filteredDecorations"
-                :key="deco.id"
-                @click="() => { setDecoration(deco); decoDialog?.close(); }"
-            >
-                <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
-            </button>
-        </div>
-    </dialog>
+    <DecorationSelect
+        :all-decorations="props.allDecorations"
+        kind="armor"
+        :decoration-display="props.decorationDisplay"
+        :slot-level="decoDialogSlotLevel"
+        :model-value="currentSelectedDecoration"
+        :open="decoDialogOpen"
+        @update:modelValue="updateDecoration"
+        @close="closeDecoDialog"
+    />
 
     <div
         class="grid grid-cols-1 lg:grid-cols-[auto_200px] gap-y-3 gap-x-5 rounded-xl"
@@ -205,14 +201,6 @@ watch(
                 @click="
                     () => {
                         showArmorsFor = kind;
-                        setArmor = (armor: ArmorPiece) => {
-                            selectedArmor[kind] = armor;
-                            selectedDecorations[kind] = {
-                                0: undefined,
-                                1: undefined,
-                                2: undefined,
-                            };
-                        };
                         armorDialog?.showModal();
                     }
                 "
@@ -227,15 +215,7 @@ watch(
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
                 v-bind:key="slotId"
-                @click="
-                    () => {
-                        showDecorationsFor = slotLevel;
-                        setDecoration = (deco: Decoration) => {
-                            selectedDecorations[kind][slotId] = deco;
-                        };
-                        decoDialog?.showModal();
-                    }
-                "
+                @click="() => openDecoDialog(kind, slotLevel, slotId)"
             >
                 <DecorationBtn
                     :decoration="selectedDecorations[kind][slotId]"

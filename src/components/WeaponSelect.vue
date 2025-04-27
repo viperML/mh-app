@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed, reactive, useTemplateRef, watchEffect } from "vue";
+import { computed, reactive, ref, useTemplateRef, watchEffect } from "vue";
 import type { Weapon } from "../scripts/weapon";
 import { parseNumber } from "../scripts/util";
 import DecorationBtn from "./DecorationBtn.vue";
-import type { DecorationDisplay } from "./App.vue";
+import DecorationSelect from "./DecorationSelect.vue";
+import type { DecorationDisplay } from "../scripts/settings";
+import type { Decoration, DecoSlot } from "../scripts/decorations";
 import { GSIcon } from "../assets/weaponIcons";
 
 const props = defineProps<{
     decorationDisplay: DecorationDisplay;
+    allDecorations: Map<number, Decoration>;
 }>();
 
 const KEYS = {
@@ -48,6 +51,42 @@ const affInput = useTemplateRef("affInput");
 const iconSize = 20;
 import AttackIcon from "../assets/attac_icons_mhw_wiki_guide.png";
 import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
+
+// Weapon decoration slots (3 slots, can be undefined or Decoration)
+const weaponDecorations = reactive<Record<DecoSlot, Decoration | undefined>>({
+    0: undefined,
+    1: undefined,
+    2: undefined,
+});
+
+// Dialog state for selecting a decoration
+const decoDialogOpen = ref(false);
+const decoDialogSlotLevel = ref(1); // 1, 2, or 3
+const decoDialogSlotId = ref<DecoSlot | null>(null);
+
+function openDecoDialog(slotLevel: number, slotId: DecoSlot) {
+    decoDialogSlotLevel.value = slotLevel;
+    decoDialogSlotId.value = slotId;
+    decoDialogOpen.value = true;
+}
+function closeDecoDialog() {
+    decoDialogOpen.value = false;
+}
+function updateDecoration(deco: Decoration | undefined) {
+    if (decoDialogSlotId.value !== null) {
+        weaponDecorations[decoDialogSlotId.value] = deco;
+    }
+}
+
+const currentSelectedDecoration = computed(() => {
+    if (decoDialogSlotId.value !== null) {
+        return weaponDecorations[decoDialogSlotId.value];
+    }
+    return undefined;
+});
+
+// Example: weapon slot levels (could be dynamic in the future)
+const weaponSlotLevels = [3, 3, 3];
 </script>
 
 <template>
@@ -75,26 +114,47 @@ import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
         </div>
 
         <div class="grid gap-1">
-            <DecorationBtn :decorationDisplay v-for="slotId of [1, 2, 3]" v-bind:key="slotId" />
+            <button
+                v-for="slotId in [0, 1, 2]"
+                :key="slotId"
+                @click="() => openDecoDialog(weaponSlotLevels[slotId] ?? 1, slotId as DecoSlot)"
+            >
+                <DecorationBtn
+                    :decoration="weaponDecorations[slotId as DecoSlot]"
+                    :decoration-display="props.decorationDisplay"
+                    :slot-size="weaponSlotLevels[slotId] ?? 1"
+                />
+            </button>
         </div>
+
+        <DecorationSelect
+            :all-decorations="allDecorations"
+            kind="weapon"
+            :decoration-display="props.decorationDisplay"
+            :slot-level="decoDialogSlotLevel"
+            :model-value="currentSelectedDecoration"
+            :open="decoDialogOpen"
+            @update:modelValue="updateDecoration"
+            @close="closeDecoDialog"
+        />
     </div>
 </template>
 
 <style scoped>
-@reference "../styles/main.css";
 input {
     width: 100%;
     text-align: center;
 }
 
 .mh-number {
-    /* width: 200px; */
     display: grid;
     align-items: center;
     width: 100px;
-    padding: --spacing(0.5);
+    padding: 0.5rem;
     font-weight: 700;
-    @apply rounded-full px-3;
+    border-radius: 9999px;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
 }
 
 .mh-affinity::after {
