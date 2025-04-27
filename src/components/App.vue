@@ -81,7 +81,7 @@ const myEfr = computed<EfrInfo | undefined>(() => {
             />
         </div>
 
-        <div class="mh-card bg-zinc-800 p-4 rounded-2xl h-fit">
+        <div class="mh-card bg-zinc-800 p-4 rounded-2xl h-fit grid grid-cols-1 gap-2">
             <template v-if="myEfr !== undefined">
                 <Efr :efr-info="myEfr" />
             </template>
@@ -90,6 +90,8 @@ const myEfr = computed<EfrInfo | undefined>(() => {
             <div class="grid grid-cols-2">
                 <SkillDisplay v-for="skillRank of mergedSkills" v-bind:key="String(skillRank.skill.id)" :skill-rank />
             </div>
+
+            <span class="text-sm text-neutral-500">https://viperml.github.io/mh-app</span>
         </div>
 
 
