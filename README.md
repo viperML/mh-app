@@ -58,3 +58,6 @@
     - [ ] Armor rarity color
     - [ ] Localization to all languages
     - [ ] Add beta indicator
+    - [ ] Sort dialog elements {MVP}
+
+- [ ] SEO meta tags {MVP}
