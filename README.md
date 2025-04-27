@@ -11,8 +11,7 @@
 
 - [ ] CTA
 
-    - [ ] Submit issues on Github
-    - [ ] Submit issues by mail
+    - [x] Submit issues on Github
     - [ ] Patreon?
 
 - [ ] Settings
@@ -21,28 +20,28 @@
 
 - [ ] Weapon select
 
-    - [ ] Add sharpness indicator
+    - [ ] Add sharpness indicator {MVP}
     - [ ] Custom elemental damage
 
 - [ ] EFR Display
 
-    - [ ] Display EFR
+    - [z] Display EFR
     - [ ] Display other stats
 
 - [ ] EFR Calculator
 
     - [ ] Elemental damage
-    - [ ] Add rules for all skills
+    - [ ] Add rules for all skills {MVP}
     - [ ] Rewrite to rust/wasm?
 
 - [ ] Armor select
 
-    - [ ] Fix colors for skills
+    - [ ] Fix colors for skills {MVP}
 
 - [ ] Fix dialogs
 
-    - [ ] Remove click-through
-    - [ ] Add search bar
+    - [ ] Remove click-through {MVP}
+    - [ ] Add search bar {MVP}
 
 - General UI
     - [ ] Max-width on mobile
