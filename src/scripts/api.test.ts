@@ -1,22 +1,27 @@
-import { test } from "vitest";
-import { getDecorations } from "./decorations";
-import { getSkills } from "./skill";
-import util from "node:util";
-import { getArmors } from "./api";
+import { describe, expectTypeOf, test } from "vitest";
+import { type Decoration, getDecorations } from "./decorations";
+import { getSkills, type Skill } from "./skill";
+import { type ArmorPiece, getArmors } from "./api";
 
-test("Skills", async () => {
-    const skills = await getSkills();
-    console.log(util.inspect(skills, { depth: null }));
+let skills: Map<number, Skill> | undefined;
+
+test.sequential("Skills", async () => {
+    skills = await getSkills();
+    for (const [, skill] of skills) {
+        expectTypeOf(skill).toMatchObjectType<Skill>();
+    }
 });
 
-test("Decorations", async () => {
-    const skills = await getSkills();
-    const decorations = await getDecorations(skills);
-    console.log(util.inspect(decorations, { depth: null }));
+test.sequential("Decorations", async () => {
+    const decos = await getDecorations(skills!);
+    for (const [, deco] of decos) {
+        expectTypeOf(deco).toMatchObjectType<Decoration>();
+    }
 });
 
-test("Armor", async () => {
-    const skills = await getSkills();
-    const armors = await getArmors(skills);
-    console.log(util.inspect(armors, { depth: null }));
+test.sequential("Armor", async () => {
+    const armorPieces = await getArmors(skills!);
+    for (const [, armorPiece] of armorPieces) {
+        expectTypeOf(armorPiece).toMatchObjectType<ArmorPiece>();
+    }
 });

@@ -41,9 +41,9 @@ export function optimize(options: OptimizeOptions) {
                                 skills: mergedSkills,
                             });
 
-                            if (myEfr.efr > maxEfr) {
+                            if (myEfr.effective_raw > maxEfr) {
                                 bestCombo = combo;
-                                maxEfr = myEfr.efr;
+                                maxEfr = myEfr.effective_raw;
                             }
 
                             break $outer;

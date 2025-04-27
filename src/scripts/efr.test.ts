@@ -1,41 +1,52 @@
-import { expect, test } from "vitest";
+import { assert, expect, test } from "vitest";
 import { efr } from "./efr";
-import { mergeSkillRanks, type SkillRank2 } from "./skill";
+import { mergeSkillRanks, type SkillRank } from "./skill";
 
-function fakeSkill(name: string, level: number): SkillRank2 {
+const ids: Record<string, number> = {};
+
+function mkId(name: string): number {
+    if (ids[name] === undefined) {
+        ids[name] = Object.keys(ids).length;
+    }
+    return ids[name];
+}
+
+function s(name: string, level: number): SkillRank {
     return {
         level,
         skill: {
             name,
-            id: 0,
+            id: mkId(name),
             kind: "armor",
+            maxRank: -1,
+            iconKind: "set",
         },
     };
 }
 
-test("merge skills", () => {
-    expect(
-        mergeSkillRanks(fakeSkill("Weakness Exploit", 3), fakeSkill("Agitator", 4), fakeSkill("Agitator", 1)),
-    ).toMatchSnapshot();
-});
-
-function testSkill(...skills: SkillRank2[]) {
+function testSkill(...skills: SkillRank[]) {
     // Create a test name from all the skills
     const name = skills.map(rank => `${rank.skill.name}@${String(rank.level)}`).join("+");
 
     test(`Skills: ${name}`, () => {
-        expect(
+        const mergedSkills = mergeSkillRanks(...skills);
+        if (skills.length > 0) {
+            assert(mergedSkills.length > 0);
+        }
+        expect([
+            mergedSkills,
             efr({
                 attack: 100,
                 affinity: 0,
-                skills: mergeSkillRanks(...skills),
+                skills: mergedSkills,
             }),
-        ).toMatchSnapshot();
+        ]).toMatchSnapshot();
     });
 }
 
 testSkill();
 
-testSkill(fakeSkill("Agitator", 5));
-testSkill(fakeSkill("Weakness Exploit", 5));
-testSkill(fakeSkill("Critical Eye", 5));
+testSkill(s("Agitator", 5));
+testSkill(s("Weakness Exploit", 5));
+testSkill(s("Critical Eye", 5));
+testSkill(s("Agitator", 3), s("Critical Eye", 5), s("Agitator", 2));

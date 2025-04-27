@@ -1,40 +1,110 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Skills:  1`] = `
-{
-  "affinity": 0,
-  "attack": 100,
-  "efr": 100,
-}
+[
+  [],
+  {
+    "affinity": 0,
+    "attack": 100,
+    "effective_raw": 100,
+  },
+]
+`;
+
+exports[`Skills: Agitator@3+Critical Eye@5+Agitator@2 1`] = `
+[
+  [
+    {
+      "level": 5,
+      "skill": {
+        "iconKind": "set",
+        "id": 0,
+        "kind": "armor",
+        "maxRank": -1,
+        "name": "Agitator",
+      },
+    },
+    {
+      "level": 5,
+      "skill": {
+        "iconKind": "set",
+        "id": 2,
+        "kind": "armor",
+        "maxRank": -1,
+        "name": "Critical Eye",
+      },
+    },
+  ],
+  {
+    "affinity": 0.35,
+    "attack": 120,
+    "effective_raw": 130.5,
+  },
+]
 `;
 
 exports[`Skills: Agitator@5 1`] = `
-{
-  "affinity": 0.15,
-  "attack": 120,
-  "efr": 124.5,
-}
+[
+  [
+    {
+      "level": 5,
+      "skill": {
+        "iconKind": "set",
+        "id": 0,
+        "kind": "armor",
+        "maxRank": -1,
+        "name": "Agitator",
+      },
+    },
+  ],
+  {
+    "affinity": 0.15,
+    "attack": 120,
+    "effective_raw": 124.5,
+  },
+]
 `;
 
 exports[`Skills: Critical Eye@5 1`] = `
-{
-  "affinity": 0.2,
-  "attack": 100,
-  "efr": 105,
-}
+[
+  [
+    {
+      "level": 5,
+      "skill": {
+        "iconKind": "set",
+        "id": 2,
+        "kind": "armor",
+        "maxRank": -1,
+        "name": "Critical Eye",
+      },
+    },
+  ],
+  {
+    "affinity": 0.2,
+    "attack": 100,
+    "effective_raw": 105,
+  },
+]
 `;
 
 exports[`Skills: Weakness Exploit@5 1`] = `
-{
-  "affinity": 0.3,
-  "attack": 100,
-  "efr": 107.5,
-}
-`;
-
-exports[`merge skills 1`] = `
-Map {
-  "Weakness Exploit" => 3,
-  "Agitator" => 5,
-}
+[
+  [
+    {
+      "level": 5,
+      "skill": {
+        "iconKind": "set",
+        "id": 1,
+        "kind": "armor",
+        "maxRank": -1,
+        "name": "Weakness Exploit",
+      },
+    },
+  ],
+  {
+    "affinity": 0.3,
+    "attack": 100,
+    "effective_raw": 107.5,
+  },
+]
 `;

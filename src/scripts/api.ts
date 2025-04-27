@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { DecoSlot, DecoSlotLevel } from "./decorations";
-import { rawRankToRank, type RawSkillRank, type Skill2, type SkillRank2 } from "./skill";
+import { rawRankToRank, type RawSkillRank, type Skill, type SkillRank } from "./skill";
 
 export type ArmorKind = "head" | "chest" | "arms" | "waist" | "legs" | "charm";
 export const armorKinds: ArmorKind[] = ["head", "chest", "arms", "waist", "legs", "charm"];
@@ -14,13 +14,13 @@ export interface RawArmorPiece {
     slots: DecoSlotLevel[];
 }
 
-export interface ArmorPiece {
+export type ArmorPiece = {
     name: string;
     id: number;
     kind: ArmorKind;
-    skills: SkillRank2[];
+    skills: SkillRank[];
     slots: Record<DecoSlot, DecoSlotLevel>;
-}
+};
 
 export type Projection<T, Prefix extends string = ""> = {
     [K in keyof T & string as T[K] extends (infer U)[]
@@ -77,7 +77,7 @@ const charmProjection: Projection<Charm> = {
     "ranks.skills.skill": true,
 };
 
-export async function getArmors(skills: Map<number, Skill2>): Promise<Map<number, ArmorPiece>> {
+export async function getArmors(skills: Map<number, Skill>): Promise<Map<number, ArmorPiece>> {
     const pieces = async () => {
         const url = new URL("https://wilds.mhdb.io/en/armor");
         url.searchParams.set("p", JSON.stringify(armorProjection));

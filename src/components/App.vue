@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import ArmorSelect from "./ArmorSelect.vue";
 
-import { getSkills, mergeSkillsRanksInto2, type MergedSkills2 } from "../scripts/skill";
+import { getSkills, mergeSkillRanks, type SkillRank } from "../scripts/skill";
 import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
 import WeaponSelect from "./WeaponSelect.vue";
 import type { Weapon } from "../scripts/weapon";
 import SkillDisplay from "./SkillDisplay.vue";
-import GlobalSettings, { type DecorationDisplay } from "./GlobalSettings.vue";
+import GlobalSettings from "./GlobalSettings.vue";
 import { readSettings } from "../scripts/settings";
+import { efr, type EfrInfo, type EfrInput } from "../scripts/efr";
+import Efr from "./Efr.vue";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
@@ -18,11 +20,11 @@ const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), get
 const armorEmits = ref<ArmorEmits>();
 
 const mergedSkills = computed(() => {
-    const res: MergedSkills2 = new Map();
+    let res: SkillRank[] = [];
     if (armorEmits.value?.armor) {
         for (const [, piece] of Object.entries(armorEmits.value.armor)) {
             if (piece) {
-                mergeSkillsRanksInto2(res, ...piece.skills);
+                res = mergeSkillRanks(...res, ...piece.skills);
             }
         }
     }
@@ -30,7 +32,7 @@ const mergedSkills = computed(() => {
         for (const [, decos] of Object.entries(armorEmits.value.decorations)) {
             for (const [, deco] of Object.entries(decos)) {
                 if (deco) {
-                    mergeSkillsRanksInto2(res, ...deco.skills);
+                    res = mergeSkillRanks(...res, ...deco.skills);
                 }
             }
         }
@@ -38,16 +40,27 @@ const mergedSkills = computed(() => {
     return res;
 });
 
-watchEffect(() => {
-    for (const [skillId, skillRank] of mergedSkills.value) {
-        console.log(allSkills.get(skillId)?.name, "=>", skillRank);
-        console.log(allSkills.get(skillId)?.iconKind);
-    }
-});
-
 const weapon = ref<Weapon>();
 
 const settings = ref(readSettings());
+
+const efrInput = computed<EfrInput | undefined>(() => {
+    if (weapon.value === undefined) return undefined;
+    return {
+        attack: weapon.value.damage,
+        affinity: weapon.value.affinity,
+        skills: mergedSkills.value,
+    };
+});
+
+watchEffect(() => {
+    console.log("efrInput", efrInput.value);
+});
+
+const myEfr = computed<EfrInfo | undefined>(() => {
+    if (efrInput.value === undefined) return undefined;
+    return efr(efrInput.value);
+});
 </script>
 
 <template>
@@ -69,21 +82,16 @@ const settings = ref(readSettings());
         </div>
 
         <div class="mh-card bg-zinc-800 p-4 rounded-2xl h-fit">
-            <h2 class="mb-3">Stats</h2>
+            <template v-if="myEfr !== undefined">
+                <Efr :efr-info="myEfr" />
+            </template>
+
 
             <div class="grid grid-cols-2">
-                <SkillDisplay
-                    v-for="[skillId, level] of mergedSkills"
-                    v-bind:key="String(skillId)"
-                    :skill-rank="{
-                        level,
-                        skill: allSkills.get(skillId)!,
-                    }"
-                />
+                <SkillDisplay v-for="skillRank of mergedSkills" v-bind:key="String(skillRank.skill.id)" :skill-rank />
             </div>
-
-            <!-- <div>EFR: {{ myEfr }}</div> -->
         </div>
+
 
         <!-- <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">
             Decoration display: {{ decorationDisplay }}

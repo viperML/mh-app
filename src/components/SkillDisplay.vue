@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { SkillRank2 } from "../scripts/skill";
+import type { SkillRank } from "../scripts/skill";
 
 const props = defineProps<{
-    skillRank: SkillRank2;
+    skillRank: SkillRank;
 }>();
 
 // Configuration for the skill rank rectangles

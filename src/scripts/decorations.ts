@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { Projection } from "./api";
-import { rawRankToRank, type RawSkillRank, type Skill2, type SkillRank2 } from "./skill";
+import { rawRankToRank, type RawSkillRank, type Skill, type SkillRank } from "./skill";
 
 export type DecorationKind = "weapon" | "armor";
 
@@ -31,15 +31,15 @@ export type DecoSlot = 0 | 1 | 2;
 /// A level of 0 is empty
 export type DecoSlotLevel = 0 | 1 | 2 | 3;
 
-export interface Decoration {
+export type Decoration = {
     id: number;
     name: string;
     slot: DecoSlotLevel;
     kind: DecorationKind;
-    skills: SkillRank2[];
-}
+    skills: SkillRank[];
+};
 
-export async function getDecorations(skills: Map<number, Skill2>): Promise<Map<number, Decoration>> {
+export async function getDecorations(skills: Map<number, Skill>): Promise<Map<number, Decoration>> {
     const url = new URL("https://wilds.mhdb.io/en/decorations");
     url.searchParams.set("p", JSON.stringify(decorationProjection));
 

@@ -6,10 +6,10 @@ import { parseNumber } from "../scripts/util";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
 import type { DecorationDisplay } from "./App.vue";
-import type { Skill2 } from "../scripts/skill";
+import type { Skill } from "../scripts/skill";
 
 const props = defineProps<{
-    allSkills: Map<number, Skill2>;
+    allSkills: Map<number, Skill>;
     allArmors: Map<number, ArmorPiece>;
     allDecorations: Map<number, Decoration>;
     decorationDisplay: DecorationDisplay;

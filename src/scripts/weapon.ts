@@ -1,8 +1,8 @@
-import type { SkillRank2 } from "./skill";
+import type { SkillRank } from "./skill";
 
 export interface Weapon {
     id: number;
-    skills: SkillRank2[];
+    skills: SkillRank[];
     affinity: number;
     damage: number;
 }
