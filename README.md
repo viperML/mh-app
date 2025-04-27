@@ -59,5 +59,6 @@
     - [ ] Localization to all languages
     - [ ] Add beta indicator
     - [ ] Sort dialog elements {MVP}
+    - [ ] Decoration colors and categories
 
 - [ ] SEO meta tags {MVP}
