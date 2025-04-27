@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, useTemplateRef, watchEffect } from "vue";
+import { computed, reactive, ref, useTemplateRef, watchEffect, nextTick, watch } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
 import { parseNumber } from "../scripts/util";
@@ -15,8 +15,8 @@ const props = defineProps<{
     decorationDisplay: DecorationDisplay;
 }>();
 
-const armorDialog = useTemplateRef("armorDialog");
-const decoDialog = useTemplateRef("decoDialog");
+const armorDialog = ref<HTMLDialogElement | null>(null);
+const decoDialog = ref<HTMLDialogElement | null>(null);
 
 const selectedArmor = reactive(
     Object.fromEntries(
@@ -36,7 +36,7 @@ for (const kind of armorKinds) {
 }
 
 const showArmorsFor = ref(armorKinds[0]);
-const setArmor = ref((armor: ArmorPiece) => undefined);
+const setArmor = (armor: ArmorPiece) => {};
 
 const showDecorationsFor = ref(3);
 
@@ -55,7 +55,7 @@ const selectedDecorations = reactive(
     ),
 ) as Record<ArmorKind, Record<DecoSlot, Decoration | undefined>>;
 
-const setDecoration = ref((decoration: Decoration) => undefined);
+const setDecoration = (decoration: Decoration) => {};
 
 export type ArmorEmits = {
     armor: Record<ArmorKind, ArmorPiece | undefined>;
@@ -78,14 +78,68 @@ function shouldShowDecorations(armor: ArmorPiece) {
 const sortedArmorPieces = computed(() => {
     return Array.from(props.allArmors.values()).sort((a, b) => a.name.localeCompare(b.name));
 });
+
+const searchQuery = ref("");
+const searchInputRef = ref<HTMLInputElement | null>(null);
+
+const filteredArmorPieces = computed(() => {
+    const query = searchQuery.value.trim().toLowerCase();
+    return sortedArmorPieces.value.filter(
+        armor => armor.name.toLowerCase().includes(query)
+    );
+});
+
+watch(
+    () => armorDialog.value?.open,
+    (open) => {
+        if (open) {
+            searchQuery.value = "";
+            void nextTick(() => {
+                searchInputRef.value?.focus();
+            });
+        }
+    }
+);
+
+const decoSearchQuery = ref("");
+const decoSearchInputRef = ref<HTMLInputElement | null>(null);
+
+const filteredDecorations = computed(() => {
+    const query = decoSearchQuery.value.trim().toLowerCase();
+    return Array.from(props.allDecorations.values()).filter(
+        deco =>
+            deco.kind === "armor" &&
+            deco.slot <= showDecorationsFor.value &&
+            deco.name.toLowerCase().includes(query)
+    );
+});
+
+watch(
+    () => decoDialog.value?.open,
+    (open) => {
+        if (open) {
+            decoSearchQuery.value = "";
+            void nextTick(() => {
+                decoSearchInputRef.value?.focus();
+            });
+        }
+    }
+);
 </script>
 
 <template>
     <dialog ref="armorDialog" closedby="any">
         <div class="dialog-container">
-            <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
+            <input
+                ref="searchInputRef"
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search armor..."
+                class="bg-zinc-800 text-white p-2 rounded w-full"
+                @keydown.stop
+            />
             <button
-                class="bg-slate-600 p-2"
+                class="bg-zinc-800 text-white p-2 rounded w-full hover:bg-zinc-900"
                 @click="
                     () => {
                         if (showArmorsFor !== undefined) {
@@ -98,8 +152,8 @@ const sortedArmorPieces = computed(() => {
                 Remove
             </button>
             <button
-                v-for="armor of sortedArmorPieces"
-                v-bind:key="String(armor.id)"
+                v-for="armor in filteredArmorPieces"
+                :key="armor.id"
                 v-show="showArmorsFor === armor.kind"
                 @click="
                     () => {
@@ -114,19 +168,29 @@ const sortedArmorPieces = computed(() => {
     </dialog>
 
     <dialog ref="decoDialog" closedby="any">
-        <button
-            v-for="[id, deco] of allDecorations"
-            v-bind:key="id"
-            v-show="deco.kind === 'armor' && deco.slot <= showDecorationsFor"
-            @click="
-                () => {
-                    setDecoration(deco);
-                    decoDialog?.close();
-                }
-            "
-        >
-            <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
-        </button>
+        <div class="dialog-container">
+            <input
+                ref="decoSearchInputRef"
+                v-model="decoSearchQuery"
+                type="text"
+                placeholder="Search decoration..."
+                class="bg-zinc-800 text-white p-2 rounded w-full"
+                @keydown.stop
+            />
+            <button
+                class="bg-zinc-800 text-white p-2 rounded w-full hover:bg-zinc-900"
+                @click="() => { setDecoration(undefined); decoDialog?.close(); }"
+            >
+                Remove
+            </button>
+            <button
+                v-for="deco in filteredDecorations"
+                :key="deco.id"
+                @click="() => { setDecoration(deco); decoDialog?.close(); }"
+            >
+                <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
+            </button>
+        </div>
     </dialog>
 
     <div
@@ -185,13 +249,11 @@ const sortedArmorPieces = computed(() => {
 
 <style scoped>
 dialog {
-    /* display: grid; */
-    /* width: 100dvw; */
     background-color: rgb(47, 47, 47);
     position: fixed;
-    top: 50%;
+    top: 60px; /* Add vertical gap from the top */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%); /* Only center horizontally */
     margin: 0;
     padding: 40px;
     /* width: 800px; */
