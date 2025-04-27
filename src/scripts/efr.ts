@@ -21,21 +21,17 @@ export function efr(input: EfrInput): EfrInfo {
     let attack_multiplier = 0;
     let critical_multiplier = 25;
 
-    const agitator = input.skills.find(sr => sr.skill.name === "Agitator")?.level;
-    if (agitator !== undefined) {
-        assert(agitator <= 5 && agitator >= 1);
-        attack += agitator * 4;
-        affinity += ([3, 5, 7, 10, 15][agitator - 1] as number) / 100;
+    function handle(skillName: string, cb: (level: number) => undefined) {
+        const level = input.skills.find(sr => sr.skill.name === skillName)?.level;
+        if (level !== undefined) cb(level);
     }
 
-    const wex = input.skills.find(sr => sr.skill.name === "Weakness Exploit")?.level;
-    if (wex !== undefined) {
-        assert(wex <= 5 && wex >= 1);
-        affinity += ([5, 10, 15, 20, 30][wex - 1] as number) / 100;
-    }
+    // https://monsterhunterwilds.wiki.fextralife.com/SkillsA
 
-    const attack_boost = input.skills.find(sr => sr.skill.name === "Attack Boost")?.level;
-    if (attack_boost !== undefined) {
+    /**
+     * Attack Skills
+     */
+    handle("Attack Boost", attack_boost => {
         assert(attack_boost <= 5 && attack_boost >= 1);
         switch (attack_boost) {
             case 1:
@@ -56,25 +52,62 @@ export function efr(input: EfrInput): EfrInfo {
                 attack_multiplier += 4 / 100;
                 break;
         }
-    }
-
-    const critical_eye = input.skills.find(sr => sr.skill.name === "Critical Eye")?.level;
-    if (critical_eye !== undefined) {
-        assert(critical_eye <= 5 && critical_eye >= 1);
-        affinity += (critical_eye * 4) / 100;
-    }
-
-    const critical_boost = input.skills.find(sr => sr.skill.name === "Critical Boost")?.level;
-    if (critical_boost !== undefined) {
-        assert(critical_boost <= 3 && critical_boost >= 1);
-        critical_multiplier = ([28, 31, 34, 37, 40][critical_boost] as number) / 100;
-    }
-
-    const max_might = input.skills.find(sr => sr.skill.name === "Maximum Might")?.level;
-    if (max_might !== undefined) {
+    });
+    handle("Resentment", level => {
+        attack += level * 5;
+    });
+    // Adrenaline Rush
+    // Offensive Guard
+    handle("Peak Performance", level => {
+        switch (level) {
+            case 1:
+                attack += 3;
+                break;
+            case 2:
+                attack += 6;
+                break;
+            case 3:
+                attack += 10;
+                break;
+            case 4:
+                attack += 15;
+                break;
+            case 5:
+                attack += 20;
+                break;
+        }
+    });
+    // Counterstrike
+    handle("Weakness Exploit", wex => {
+        assert(wex <= 5 && wex >= 1);
+        affinity += ([5, 10, 15, 20, 30][wex - 1] as number) / 100;
+    });
+    handle("Maximum Might", max_might => {
         assert(max_might >= 1 && max_might <= 3);
         affinity += max_might / 10;
-    }
+    });
+
+    /**
+     * Affinity
+     */
+    handle("Critical Boost", critical_boost => {
+        assert(critical_boost <= 3 && critical_boost >= 1);
+        critical_multiplier = ([28, 31, 34, 37, 40][critical_boost] as number) / 100;
+    });
+    handle("Critical Eye", critical_eye => {
+        assert(critical_eye <= 5 && critical_eye >= 1);
+        affinity += (critical_eye * 4) / 100;
+    });
+    // Critical Draw
+
+    /**
+     * Offensive
+     */
+    handle("Agitator", agitator => {
+        assert(agitator <= 5 && agitator >= 1);
+        attack += agitator * 4;
+        affinity += ([3, 5, 7, 10, 15][agitator - 1] as number) / 100;
+    });
 
     // Apply attack multiplier
     attack = attack * (1 + attack_multiplier);

@@ -45,6 +45,10 @@
     - [ ] Remove click-through {MVP}
     - [ ] Add search bar {MVP}
 
+- Skills
+
+    - [ ] Set bonus skills {MVP}
+
 - General UI
     - [ ] Max-width on mobile
     - [ ] Better loading state
