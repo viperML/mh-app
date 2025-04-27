@@ -22,6 +22,8 @@
 
     - [ ] Add sharpness indicator {MVP}
     - [ ] Custom elemental damage
+    - [ ] Official weapon list
+    - [ ] Custom weapon decorations
 
 - [ ] EFR Display
 
@@ -46,8 +48,9 @@
 - General UI
     - [ ] Max-width on mobile
     - [ ] Better loading state
-    - [ ] Hover states for skills
+    - [ ] Hover states for skills {MVP}
     - [ ] Hovers, shadows, animations
     - [ ] Use original assets for decorations
     - [ ] Armor rarity color
     - [ ] Localization to all languages
+    - [ ] Add beta indicator
