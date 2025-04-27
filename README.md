@@ -1,5 +1,10 @@
 # mh-app
 
+## Attribution
+
+- https://gamecat.fun/e
+- https://mhwildshub.com/builder
+
 ## TODO
 
 - [ ] Data loading

@@ -94,7 +94,6 @@ const myEfr = computed<EfrInfo | undefined>(() => {
             <span class="text-sm text-neutral-500">https://viperml.github.io/mh-app</span>
         </div>
 
-
         <!-- <button class="p-2 bg-amber-600 text-black" @click="swapDecorationDisplay">
             Decoration display: {{ decorationDisplay }}
         </button> -->

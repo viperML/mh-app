@@ -12,6 +12,7 @@ export interface RawArmorPiece {
     kind: ArmorKind;
     skills: RawSkillRank[];
     slots: DecoSlotLevel[];
+    rarity: number;
 }
 
 export type ArmorPiece = {
@@ -20,6 +21,7 @@ export type ArmorPiece = {
     kind: ArmorKind;
     skills: SkillRank[];
     slots: Record<DecoSlot, DecoSlotLevel>;
+    rarity: number;
 };
 
 export type Projection<T, Prefix extends string = ""> = {
@@ -51,6 +53,7 @@ export const armorProjection: Projection<RawArmorPiece> = {
     "skills.level": true,
     "skills.name": false,
     "skills.skill": true,
+    rarity: true,
 };
 
 interface Charm {
@@ -63,6 +66,7 @@ interface CharmRank {
     name: string;
     description: string;
     skills: RawSkillRank[];
+    rarity: number;
 }
 
 const charmProjection: Projection<Charm> = {
@@ -75,6 +79,7 @@ const charmProjection: Projection<Charm> = {
     "ranks.skills.description": false,
     "ranks.skills.name": false,
     "ranks.skills.skill": true,
+    "ranks.rarity": true,
 };
 
 export async function getArmors(skills: Map<number, Skill>): Promise<Map<number, ArmorPiece>> {
@@ -112,6 +117,7 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
                 kind: "charm",
                 skills: highestCharm.skills,
                 slots: [],
+                rarity: highestCharm.rarity,
             };
         }),
     );
@@ -131,6 +137,7 @@ export async function getArmors(skills: Map<number, Skill>): Promise<Map<number,
                 1: piece.slots[1] ?? 0,
                 2: piece.slots[2] ?? 0,
             },
+            rarity: piece.rarity,
         };
         return res;
     });

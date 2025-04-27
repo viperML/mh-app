@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, useTemplateRef, watchEffect } from "vue";
+import { computed, reactive, ref, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
 import { parseNumber } from "../scripts/util";
@@ -74,6 +74,10 @@ watchEffect(() => {
 function shouldShowDecorations(armor: ArmorPiece) {
     return Object.values(armor.slots).some((slot: number) => slot > 0);
 }
+
+const sortedArmorPieces = computed(() => {
+    return Array.from(props.allArmors.values()).sort((a, b) => a.name.localeCompare(b.name));
+});
 </script>
 
 <template>
@@ -94,8 +98,8 @@ function shouldShowDecorations(armor: ArmorPiece) {
                 Remove
             </button>
             <button
-                v-for="[id, armor] of allArmors"
-                v-bind:key="String(id)"
+                v-for="armor of sortedArmorPieces"
+                v-bind:key="String(armor.id)"
                 v-show="showArmorsFor === armor.kind"
                 @click="
                     () => {
