@@ -48,8 +48,8 @@
 - General UI
     - [ ] Max-width on mobile
     - [ ] Better loading state
-    - [ ] Hover states for skills {MVP}
-    - [ ] Hovers, shadows, animations
+    - [ ] Hover states for skills
+    - [ ] Hovers, shadows, animations {MVP}
     - [ ] Use original assets for decorations
     - [ ] Armor rarity color
     - [ ] Localization to all languages

@@ -15,11 +15,11 @@ const props = defineProps<{
 
     <div class="flex flex-row items-center">
         <img :src="AttackIcon.src" :width="iconSize" :height="iconSize" />
-        {{ props.efrInfo.attack }}
+        {{ Math.floor(props.efrInfo.attack) }}
     </div>
 
     <div class="flex flex-row items-center">
         <img :src="AffinityIcon.src" :width="iconSize" :height="iconSize" />
-        {{ props.efrInfo.affinity * 100 }}%
+        {{  Math.floor(props.efrInfo.affinity * 100) }}%
     </div>
 </template>

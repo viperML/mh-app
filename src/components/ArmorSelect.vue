@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, toRaw, useTemplateRef, watchEffect } from "vue";
+import { reactive, ref, useTemplateRef, watchEffect } from "vue";
 import { armorKinds, type ArmorKind, type ArmorPiece } from "../scripts/api";
 import ArmorCard from "./ArmorCard.vue";
 import { parseNumber } from "../scripts/util";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
 import DecorationBtn from "./DecorationBtn.vue";
-import type { DecorationDisplay } from "./App.vue";
+import type { DecorationDisplay } from "../scripts/settings";
 import type { Skill } from "../scripts/skill";
 
 const props = defineProps<{
@@ -74,38 +74,39 @@ watchEffect(() => {
 function shouldShowDecorations(armor: ArmorPiece) {
     return Object.values(armor.slots).some((slot: number) => slot > 0);
 }
-
 </script>
 
 <template>
     <dialog ref="armorDialog" closedby="any">
-        <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
-        <button
-            class="bg-slate-600 p-2"
-            @click="
-                () => {
-                    if (showArmorsFor !== undefined) {
-                        selectedArmor[showArmorsFor] = undefined;
+        <div class="dialog-container">
+            <button class="bg-slate-600 p-2" @click="armorDialog?.close()">Close</button>
+            <button
+                class="bg-slate-600 p-2"
+                @click="
+                    () => {
+                        if (showArmorsFor !== undefined) {
+                            selectedArmor[showArmorsFor] = undefined;
+                        }
+                        armorDialog?.close();
                     }
-                    armorDialog?.close();
-                }
-            "
-        >
-            Remove
-        </button>
-        <button
-            v-for="[id, armor] of allArmors"
-            v-bind:key="String(id)"
-            v-show="showArmorsFor === armor.kind"
-            @click="
-                () => {
-                    setArmor(armor);
-                    armorDialog?.close();
-                }
-            "
-        >
-            <ArmorCard :armor="armor" :kind="armor.kind" />
-        </button>
+                "
+            >
+                Remove
+            </button>
+            <button
+                v-for="[id, armor] of allArmors"
+                v-bind:key="String(id)"
+                v-show="showArmorsFor === armor.kind"
+                @click="
+                    () => {
+                        setArmor(armor);
+                        armorDialog?.close();
+                    }
+                "
+            >
+                <ArmorCard :armor="armor" :kind="armor.kind" />
+            </button>
+        </div>
     </dialog>
 
     <dialog ref="decoDialog" closedby="any">
@@ -124,8 +125,12 @@ function shouldShowDecorations(armor: ArmorPiece) {
         </button>
     </dialog>
 
-    <div class="grid grid-cols-1 lg:grid-cols-[auto_200px] items-start bg-zinc-800 p-2 gap-y-3 gap-x-5 rounded-xl" v-for="kind of armorKinds" v-bind:key="kind">
-        <button class="row-span-full">
+    <div
+        class="grid grid-cols-1 lg:grid-cols-[auto_200px] gap-y-3 gap-x-5 rounded-xl"
+        v-for="kind of armorKinds"
+        v-bind:key="kind"
+    >
+        <button class="row-span-full h-full">
             <ArmorCard
                 :kind="kind"
                 :armor="selectedArmor[kind]"
@@ -146,7 +151,10 @@ function shouldShowDecorations(armor: ArmorPiece) {
             />
         </button>
 
-        <div class="grid grid-cols-1 lg:grid-rows-3 gap-1 h-max" v-show="selectedArmor[kind] && shouldShowDecorations(selectedArmor[kind])">
+        <div
+            class="grid grid-cols-1 lg:grid-rows-3 gap-1 h-max"
+            v-show="selectedArmor[kind] && shouldShowDecorations(selectedArmor[kind])"
+        >
             <button
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
@@ -175,14 +183,24 @@ function shouldShowDecorations(armor: ArmorPiece) {
 dialog {
     /* display: grid; */
     /* width: 100dvw; */
-    justify-content: center;
     background-color: rgb(47, 47, 47);
-    grid-template-columns: 200px;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     margin: 0;
+    padding: 40px;
+    /* width: 800px; */
+}
+
+.dialog-container {
+    display: grid;
+    grid-template-columns: auto;
+    width: 400px;
+    gap: 10px;
+}
+
+dialog > button {
     width: 300px;
 }
 

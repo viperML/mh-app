@@ -51,9 +51,9 @@ import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
 </script>
 
 <template>
-    <div class="mh-weapon bg-zinc-800 p-2 rounded-xl grid grid-cols-1 gap-y-2 lg:grid-cols-[auto_200px]">
+    <div class="mh-weapon rounded-xl grid grid-cols-1 gap-y-2 lg:grid-cols-[auto_200px] gap-2">
         <div class="flex gap-2 flex-col">
-            <div class="flex flex-row items-center gap-2">
+            <div class="flex flex-row items-center gap-2 p-2 bg-zinc-800 rounded-lg">
                 <img :src="GSIcon.src" :width="20" :height="20" />
                 <h2>Custom Weapon</h2>
             </div>

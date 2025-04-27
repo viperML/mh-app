@@ -12,7 +12,7 @@ import SkillDisplay from "./SkillDisplay.vue";
 import GlobalSettings from "./GlobalSettings.vue";
 import { readSettings } from "../scripts/settings";
 import { efr, type EfrInfo, type EfrInput } from "../scripts/efr";
-import Efr from "./Efr.vue";
+import Efr from "./EfrDisplay.vue";
 
 const allSkills = await getSkills();
 const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
