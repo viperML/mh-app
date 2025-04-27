@@ -27,7 +27,7 @@
 
 - [ ] EFR Display
 
-    - [z] Display EFR
+    - [x] Display EFR
     - [ ] Display other stats
 
 - [ ] EFR Calculator
