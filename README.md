@@ -61,10 +61,11 @@
     - [ ] Hovers, shadows, animations {MVP}
     - [ ] Use original assets for decorations
     - [ ] Armor rarity color
-    - [ ] Localization to all languages
     - [ ] Add beta indicator
     - [ ] Sort dialog elements {MVP}
     - [ ] Decoration colors and categories
     - [ ] Show empty slots in weapon/armor select
 
 - [ ] SEO meta tags {MVP}
+
+- [ ] Localization {MVP}
