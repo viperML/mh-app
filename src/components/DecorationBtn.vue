@@ -43,7 +43,9 @@ const rectX = (n: number) => (n-1) * rectSpacing + 2;
                 ]"
             />
         </svg>
-        {{ displayName }}
+        <span>
+            {{ displayName }}
+        </span>
     </div>
 </template>
 

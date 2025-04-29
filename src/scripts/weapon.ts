@@ -1,9 +1,7 @@
-export interface Weapon {
-    id: number;
-    skills: SkillRank[];
-    affinity: number;
-    damage: number;
-}
+import { assert } from "tsafe/assert";
+import type { Projection } from "./api";
+import { rawRankToRank, type RawSkillRank, type Skill, type SkillRank } from "./skill";
+import type { DecoSlot, DecoSlotLevel } from "./decorations";
 
 export type WeaponKind =
     | "bow"
@@ -21,11 +19,6 @@ export type WeaponKind =
     | "switch-axe"
     | "sword-shield";
 
-import { assert } from "tsafe/assert";
-import type { Projection } from "./api";
-import { rawRankToRank, type RawSkillRank, type Skill, type SkillRank } from "./skill";
-import type { DecoSlot, DecoSlotLevel } from "./decorations";
-
 export interface RawWeapon {
     id: number;
     kind: WeaponKind;
@@ -37,7 +30,7 @@ export interface RawWeapon {
     affinity: number;
 }
 
-export type WeaponPiece = {
+export type Weapon = {
     id: number;
     kind: WeaponKind;
     name: string;
@@ -65,15 +58,15 @@ const weaponProjection: Projection<RawWeapon> = {
     "skills.skill": true,
 };
 
-export async function getWeapons(skills: Map<number, Skill>): Promise<Map<number, WeaponPiece>> {
+export async function getWeapons(skills: Map<number, Skill>): Promise<Map<number, Weapon>> {
     const url = new URL("https://wilds.mhdb.io/en/weapons");
     url.searchParams.set("p", JSON.stringify(weaponProjection));
     const resp = await fetch(url);
     const rawWeapons = (await resp.json()) as RawWeapon[];
 
-    const res = new Map<number, WeaponPiece>(
+    const res = new Map<number, Weapon>(
         rawWeapons.map(rawWeapon => {
-            const weapon: WeaponPiece = {
+            const weapon: Weapon = {
                 id: rawWeapon.id,
                 kind: rawWeapon.kind,
                 name: rawWeapon.name,

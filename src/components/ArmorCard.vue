@@ -28,8 +28,8 @@ const iconSize = 20;
                 :src="armorIcons[props.kind].src"
                 :class="props.armor?.rarity ? `colorize-rarity-${props.armor?.rarity}` : ''"
             />
-            <h2 :class="props.armor ? '' : 'text-neutral-500'">
-                {{ props.armor?.name ?? "Not set" }}
+            <h2 :class="props.armor ? '' : 'text-neutral-500 capitalize'">
+                {{ props.armor?.name ?? props.kind }}
             </h2>
         </div>
 

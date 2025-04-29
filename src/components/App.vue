@@ -13,9 +13,14 @@ import GlobalSettings from "./GlobalSettings.vue";
 import { readSettings } from "../scripts/settings";
 import { efr, type EfrInfo, type EfrInput } from "../scripts/efr";
 import Efr from "./EfrDisplay.vue";
+import { getWeapons } from "../scripts/weapon";
 
 const allSkills = await getSkills();
-const [allArmors, allDecorations] = await Promise.all([getArmors(allSkills), getDecorations(allSkills)]);
+const [allArmors, allDecorations, allWeapons] = await Promise.all([
+    getArmors(allSkills),
+    getDecorations(allSkills),
+    getWeapons(allSkills),
+]);
 
 console.log("allDecorations", allDecorations);
 
@@ -72,8 +77,12 @@ const myEfr = computed<EfrInfo | undefined>(() => {
         </div>
 
         <div class="mh-card grid grid-cols-1 gap-3 mh-equipment">
-            <WeaponSelect v-model:weapon="weapon" :decoration-display="settings.decorationDisplay" :all-decorations="allDecorations" />
-
+            <WeaponSelect
+                v-model:weapon="weapon"
+                :decoration-display="settings.decorationDisplay"
+                :all-decorations="allDecorations"
+                :all-weapons="allWeapons"
+            />
             <ArmorSelect
                 :all-armors="allArmors"
                 :all-skills="allSkills"

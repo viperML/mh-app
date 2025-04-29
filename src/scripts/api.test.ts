@@ -2,7 +2,7 @@ import { describe, expectTypeOf, test } from "vitest";
 import { type Decoration, getDecorations } from "./decorations";
 import { getSkills, type Skill } from "./skill";
 import { type ArmorPiece, getArmors } from "./api";
-import { getWeapons, type WeaponPiece } from "./weapon";
+import { getWeapons, type Weapon } from "./weapon";
 
 let skills: Map<number, Skill> | undefined;
 
@@ -31,6 +31,6 @@ test.sequential("Weapons", async () => {
     const weapons = await getWeapons(skills!);
     console.log(weapons);
     for (const [, weapon] of weapons) {
-        expectTypeOf(weapon).toMatchObjectType<WeaponPiece>();
+        expectTypeOf(weapon).toMatchObjectType<Weapon>();
     }
 });
