@@ -27,7 +27,7 @@
 
     - [ ] Add sharpness indicator {MVP}
     - [ ] Custom elemental damage
-    - [ ] Official weapon list
+    - [x] Official weapon list {MVP}
     - [ ] Custom weapon decorations
 
 - [ ] EFR Display
@@ -48,7 +48,7 @@
 - [ ] Fix dialogs
 
     - [ ] Remove click-through {MVP}
-    - [ ] Add search bar {MVP}
+    - [x] Add search bar {MVP}
 
 - Skills
 
@@ -65,5 +65,6 @@
     - [ ] Add beta indicator
     - [ ] Sort dialog elements {MVP}
     - [ ] Decoration colors and categories
+    - [ ] Show empty slots in weapon/armor select
 
 - [ ] SEO meta tags {MVP}

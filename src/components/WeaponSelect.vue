@@ -41,131 +41,25 @@ watchEffect(() => {
 
 const dialogRef = useTemplateRef("dialogRef");
 
-// const mode = ref<'custom' | 'select'>('select');
+const decorationSelectRef = useTemplateRef("decorationSelectRef");
 
-// const weaponDialog = ref<HTMLDialogElement | null>(null);
-// const searchQuery = ref("");
-// const searchInputRef = ref<HTMLInputElement | null>(null);
-// const selectedWeaponId = ref<number | null>(null);
+function openDecorationSelect(slotLevel: number, slotId: DecoSlot) {
+    decorationSelectRef.value?.open("weapon", slotLevel, slotId, selectedDecorations[slotId]);
+}
 
-// const sortedWeapons = computed(() => {
-//     return Array.from(props.allWeapons.values()).sort((a, b) => a.name.localeCompare(b.name));
-// });
+function handleDecorationUpdate({
+    deco,
+    kind,
+    slotId,
+}: {
+    deco: Decoration | undefined;
+    kind: string;
+    slotId: number;
+}) {
+    console.log(deco, slotId);
+    selectedDecorations[slotId as DecoSlot] = deco;
+}
 
-// const filteredWeapons = computed(() => {
-//     const query = searchQuery.value.trim().toLowerCase();
-//     return sortedWeapons.value.filter(w => w.name.toLowerCase().includes(query));
-// });
-
-// function openWeaponDialog() {
-//     weaponDialog.value?.showModal();
-//     searchQuery.value = "";
-//     void nextTick(() => searchInputRef.value?.focus());
-// }
-// function closeWeaponDialog() {
-//     weaponDialog.value?.close();
-// }
-// function selectWeapon(weapon: Weapon | undefined) {
-//     if (weapon) {
-//         selectedWeaponId.value = weapon.id;
-//         // Copy stats to local weapon
-//         weaponState.id = weapon.id;
-//         weaponState.damage = weapon.damage;
-//         weaponState.affinity = weapon.affinity;
-//         weaponState.skills = weapon.skills;
-//         weaponSlotLevels.splice(0, 3, weapon.slots[0], weapon.slots[1], weapon.slots[2]);
-//         // Reset decorations
-//         weaponDecorations[0] = undefined;
-//         weaponDecorations[1] = undefined;
-//         weaponDecorations[2] = undefined;
-//         mode.value = 'select';
-//     } else {
-//         // Switch to custom mode
-//         selectedWeaponId.value = null;
-//         mode.value = 'custom';
-//         weaponState.id = NaN;
-//         weaponState.damage = parseNumber(localStorage.getItem(KEYS.CUSTOM_DMG) ?? "none") ?? 200;
-//         weaponState.affinity = parseNumber(localStorage.getItem(KEYS.CUSTOM_AFF) ?? "none") ?? 0;
-//         weaponState.skills = [];
-//         weaponSlotLevels.splice(0, 3, 3, 3, 3);
-//         weaponDecorations[0] = undefined;
-//         weaponDecorations[1] = undefined;
-//         weaponDecorations[2] = undefined;
-//     }
-//     closeWeaponDialog();
-// }
-
-// const weaponState = reactive<Weapon>({
-//     id: NaN,
-//     damage: parseNumber(localStorage.getItem(KEYS.CUSTOM_DMG) ?? "none") ?? 200,
-//     affinity: parseNumber(localStorage.getItem(KEYS.CUSTOM_AFF) ?? "none") ?? 0,
-//     skills: [],
-// });
-
-// const emits = defineEmits<{
-//     "update:weapon": [Weapon];
-// }>();
-
-// watchEffect(() => {
-//     if (mode.value === 'custom') {
-//         localStorage.setItem(KEYS.CUSTOM_DMG, String(weaponState.damage));
-//         localStorage.setItem(KEYS.CUSTOM_AFF, String(weaponState.affinity));
-//     }
-// });
-
-// watchEffect(() => {
-//     emits("update:weapon", weaponState);
-// });
-
-// const displayedAffinity = computed<number>({
-//     get: () => weaponState.affinity * 100,
-//     set: val => {
-//         weaponState.affinity = val / 100;
-//     },
-// });
-
-// const dmgInput = useTemplateRef("dmgInput");
-// const affInput = useTemplateRef("affInput");
-
-// const iconSize = 20;
-// import AttackIcon from "../assets/attac_icons_mhw_wiki_guide.png";
-// import AffinityIcon from "../assets/affinity_icons_mhw_wiki_guide.png";
-
-// // Weapon decoration slots (3 slots, can be undefined or Decoration)
-// const weaponDecorations = reactive<Record<DecoSlot, Decoration | undefined>>({
-//     0: undefined,
-//     1: undefined,
-//     2: undefined,
-// });
-
-// // Dialog state for selecting a decoration
-// const decoDialogOpen = ref(false);
-// const decoDialogSlotLevel = ref(1); // 1, 2, or 3
-// const decoDialogSlotId = ref<DecoSlot | null>(null);
-
-// function openDecoDialog(slotLevel: number, slotId: DecoSlot) {
-//     decoDialogSlotLevel.value = slotLevel;
-//     decoDialogSlotId.value = slotId;
-//     decoDialogOpen.value = true;
-// }
-// function closeDecoDialog() {
-//     decoDialogOpen.value = false;
-// }
-// function updateDecoration(deco: Decoration | undefined) {
-//     if (decoDialogSlotId.value !== null) {
-//         weaponDecorations[decoDialogSlotId.value] = deco;
-//     }
-// }
-
-// const currentSelectedDecoration = computed(() => {
-//     if (decoDialogSlotId.value !== null) {
-//         return weaponDecorations[decoDialogSlotId.value];
-//     }
-//     return undefined;
-// });
-
-// // Example: weapon slot levels (could be dynamic in the future)
-// const weaponSlotLevels = reactive([3, 3, 3]);
 </script>
 
 <template>
@@ -176,7 +70,7 @@ const dialogRef = useTemplateRef("dialogRef");
 
         <div class="grid grid-cols-1 grid-rows-3 gap-1 w-full">
             <template v-for="(slotLevel, slotId) of selectedWeapon?.slots" v-bind:key="slotId">
-                <button class="h-max" v-show="slotLevel >= 1">
+                <button class="h-max" v-show="slotLevel >= 1" @click="() => openDecorationSelect(slotLevel, slotId)">
                     <DecorationBtn
                         :decoration-display
                         :decoration="selectedDecorations[slotId]"
@@ -187,27 +81,6 @@ const dialogRef = useTemplateRef("dialogRef");
         </div>
     </div>
 
-    <!-- <dialog ref="dialogRef" closedby="any" @close="emits('close')">
-        <div class="dialog-container">
-            <input
-                ref="searchInputRef"
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search decoration..."
-                class="bg-zinc-800 text-white p-2 rounded w-full"
-                @keydown.stop
-            />
-            <button
-                class="bg-zinc-800 text-white p-2 rounded w-full hover:bg-zinc-900"
-                @click="() => selectDecoration(undefined)"
-            >
-                Remove
-            </button>
-            <button v-for="deco in filteredDecorations" :key="deco.id" @click="() => selectDecoration(deco)">
-                <DecorationBtn :decoration="deco" :decoration-display="props.decorationDisplay" />
-            </button>
-        </div>
-    </dialog> -->
     <dialog ref="dialogRef" closedby="any">
         <div class="dialog-container">
             <button class="p-2 text-white bg-zinc-800 hover:bg-zinc-900 rounded-sm">Remove</button>
@@ -216,11 +89,9 @@ const dialogRef = useTemplateRef("dialogRef");
                 v-bind:key="id"
                 @click="
                     selectedWeapon = weapon;
-                    selectedDecorations = {
-                        0: undefined,
-                        1: undefined,
-                        2: undefined,
-                    };
+                    selectedDecorations[0] = undefined;
+                    selectedDecorations[1] = undefined;
+                    selectedDecorations[2] = undefined;
                     dialogRef?.close();
                 "
             >
@@ -228,6 +99,13 @@ const dialogRef = useTemplateRef("dialogRef");
             </button>
         </div>
     </dialog>
+    <DecorationSelect
+        ref="decorationSelectRef"
+        :all-decorations="props.allDecorations"
+        :decoration-display="props.decorationDisplay"
+        selection-mode="weapon"
+        @update:modelValue="handleDecorationUpdate"
+    />
 </template>
 
 <style scoped>

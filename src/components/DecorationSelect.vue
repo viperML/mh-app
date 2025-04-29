@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from "vue";
+import { ref, computed, nextTick, watch, defineExpose } from "vue";
 import DecorationBtn from "./DecorationBtn.vue";
 import type { Decoration, DecorationKind } from "../scripts/decorations";
 import type { DecorationDisplay } from "../scripts/settings";
@@ -7,14 +7,11 @@ import type { DecorationDisplay } from "../scripts/settings";
 const props = defineProps<{
     allDecorations: Map<number, Decoration>;
     decorationDisplay: DecorationDisplay;
-    slotLevel: number; // max slot level to show
-    modelValue: Decoration | undefined;
-    open: boolean;
-    kind: DecorationKind;
+    selectionMode?: "weapon" | "armor" | "both";
 }>();
 
 const emits = defineEmits<{
-    (e: "update:modelValue", value: Decoration | undefined): void;
+    (e: "update:modelValue", value: { deco: Decoration | undefined; kind: DecorationKind; slotId: number }): void;
     (e: "close"): void;
 }>();
 
@@ -22,36 +19,56 @@ const dialogRef = ref<HTMLDialogElement | null>(null);
 const searchQuery = ref("");
 const searchInputRef = ref<HTMLInputElement | null>(null);
 
+const openState = ref(false);
+const slotLevel = ref(1);
+const kind = ref<DecorationKind>("armor");
+const slotId = ref<number>(0);
+const modelValue = ref<Decoration | undefined>(undefined);
+
+function open(newKind: DecorationKind, newSlotLevel: number, newSlotId: number, current: Decoration | undefined) {
+    kind.value = newKind;
+    slotLevel.value = newSlotLevel;
+    slotId.value = newSlotId;
+    modelValue.value = current;
+    openState.value = true;
+}
+defineExpose({ open });
+
 const filteredDecorations = computed(() => {
     const query = searchQuery.value.trim().toLowerCase();
+    let allowedKind: DecorationKind[] = [kind.value];
+    if (props.selectionMode === "both" || !props.selectionMode) {
+        allowedKind = ["armor", "weapon"];
+    } else if (props.selectionMode === "armor") {
+        allowedKind = ["armor"];
+    } else if (props.selectionMode === "weapon") {
+        allowedKind = ["weapon"];
+    }
     return Array.from(props.allDecorations.values()).filter(
-        deco => deco.kind === props.kind && deco.slot <= props.slotLevel && deco.name.toLowerCase().includes(query),
+        deco => allowedKind.includes(deco.kind) && deco.slot <= slotLevel.value && deco.name.toLowerCase().includes(query),
     );
 });
 
-watch(
-    () => props.open,
-    open => {
-        if (open) {
-            dialogRef.value?.showModal();
-            searchQuery.value = "";
-            void nextTick(() => {
-                searchInputRef.value?.focus();
-            });
-        } else {
-            dialogRef.value?.close();
-        }
-    },
-);
+watch(openState, open => {
+    if (open) {
+        dialogRef.value?.showModal();
+        searchQuery.value = "";
+        void nextTick(() => {
+            searchInputRef.value?.focus();
+        });
+    } else {
+        dialogRef.value?.close();
+    }
+});
 
 function selectDecoration(deco: Decoration | undefined) {
-    emits("update:modelValue", deco);
-    emits("close");
+    openState.value = false;
+    emits("update:modelValue", { deco, kind: kind.value, slotId: slotId.value });
 }
 </script>
 
 <template>
-    <dialog ref="dialogRef" closedby="any" @close="emits('close')">
+    <dialog ref="dialogRef" closedby="any" @close="openState = false">
         <div class="dialog-container">
             <input
                 ref="searchInputRef"

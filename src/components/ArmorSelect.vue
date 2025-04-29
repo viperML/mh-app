@@ -96,39 +96,8 @@ watch(
     }
 );
 
-const decoDialogOpen = ref(false);
-const decoDialogSlotLevel = ref(1);
-const decoDialogKind = ref<ArmorKind | null>(null);
-const decoDialogSlotId = ref<number | null>(null);
+const decorationSelectRef = ref();
 
-function openDecoDialog(kind: ArmorKind, slotLevel: number, slotId: number) {
-    decoDialogKind.value = kind;
-    decoDialogSlotLevel.value = slotLevel;
-    decoDialogSlotId.value = slotId;
-    decoDialogOpen.value = true;
-}
-function closeDecoDialog() {
-    decoDialogOpen.value = false;
-}
-function updateDecoration(deco: Decoration | undefined) {
-    if (
-        decoDialogKind.value !== null &&
-        decoDialogSlotId.value !== null
-    ) {
-        // Cast slotId to DecoSlot to satisfy type
-        selectedDecorations[decoDialogKind.value][decoDialogSlotId.value as DecoSlot] = deco;
-    }
-}
-
-const currentSelectedDecoration = computed(() => {
-    if (
-        decoDialogKind.value !== null &&
-        decoDialogSlotId.value !== null
-    ) {
-        return selectedDecorations[decoDialogKind.value][decoDialogSlotId.value as DecoSlot];
-    }
-    return undefined;
-});
 </script>
 
 <template>
@@ -179,14 +148,15 @@ const currentSelectedDecoration = computed(() => {
     </dialog>
 
     <DecorationSelect
+        ref="decorationSelectRef"
         :all-decorations="props.allDecorations"
-        kind="armor"
         :decoration-display="props.decorationDisplay"
-        :slot-level="decoDialogSlotLevel"
-        :model-value="currentSelectedDecoration"
-        :open="decoDialogOpen"
-        @update:modelValue="updateDecoration"
-        @close="closeDecoDialog"
+        :selection-mode="'armor'"
+        @update:modelValue="({ deco, kind, slotId }) => {
+            if (armorKinds.includes(kind as ArmorKind)) {
+                selectedDecorations[kind as ArmorKind][slotId as DecoSlot] = deco;
+            }
+        }"
     />
 
     <div
@@ -215,7 +185,7 @@ const currentSelectedDecoration = computed(() => {
                 v-for="(slotLevel, slotId) of selectedArmor[kind]?.slots"
                 v-show="slotLevel"
                 v-bind:key="slotId"
-                @click="() => openDecoDialog(kind, slotLevel, slotId)"
+                @click="() => decorationSelectRef.open(kind, slotLevel, slotId, selectedDecorations[kind][slotId])"
             >
                 <DecorationBtn
                     :decoration="selectedDecorations[kind][slotId]"

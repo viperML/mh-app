@@ -13,7 +13,7 @@ const displayName = computed(() => {
     if (props.decorationDisplay === "name") {
         return props.decoration?.name ?? "No decoration";
     } else {
-        return props.decoration?.skills.map(skillRank => skillRank.skill.name).join("/") ?? "No decoration";
+        return props.decoration?.skills.map(skillRank => `${skillRank.skill.name} ${String(skillRank.level)}`).join("/") ?? "No decoration";
     }
 });
 
