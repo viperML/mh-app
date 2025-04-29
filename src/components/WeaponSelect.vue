@@ -20,6 +20,15 @@ const KEYS = {
     CUSTOM_AFF: "customWeaponAffinity",
 };
 
+export type WeaponEmits = {
+    weapon: Weapon | undefined;
+    decorations: Record<DecoSlot, Decoration | undefined>;
+};
+
+const emits = defineEmits<{
+    "update:weaponEmits": [value: WeaponEmits];
+}>();
+
 const selectedDecorations = reactive<Record<DecoSlot, Decoration | undefined>>({
     0: undefined,
     1: undefined,
@@ -60,6 +69,12 @@ function handleDecorationUpdate({
     selectedDecorations[slotId as DecoSlot] = deco;
 }
 
+watchEffect(() => {
+    emits("update:weaponEmits", {
+        weapon: selectedWeapon.value,
+        decorations: selectedDecorations,
+    });
+});
 </script>
 
 <template>

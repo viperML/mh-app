@@ -6,7 +6,7 @@ import { getArmors } from "../scripts/api";
 import { getDecorations } from "../scripts/decorations";
 import { computed, ref, watchEffect } from "vue";
 import type { ArmorEmits } from "./ArmorSelect.vue";
-import WeaponSelect from "./WeaponSelect.vue";
+import WeaponSelect, { type WeaponEmits } from "./WeaponSelect.vue";
 import type { Weapon } from "../scripts/weapon";
 import SkillDisplay from "./SkillDisplay.vue";
 import GlobalSettings from "./GlobalSettings.vue";
@@ -25,6 +25,7 @@ const [allArmors, allDecorations, allWeapons] = await Promise.all([
 console.log("allDecorations", allDecorations);
 
 const armorEmits = ref<ArmorEmits>();
+const weaponEmits = ref<WeaponEmits>();
 
 const mergedSkills = computed(() => {
     let res: SkillRank[] = [];
@@ -41,6 +42,15 @@ const mergedSkills = computed(() => {
                 if (deco) {
                     res = mergeSkillRanks(...res, ...deco.skills);
                 }
+            }
+        }
+    }
+    if (weaponEmits.value?.weapon) {
+        res = mergeSkillRanks(...res, ...weaponEmits.value.weapon.skills);
+
+        for (const [, deco] of Object.entries(weaponEmits.value.decorations)) {
+            if (deco) {
+                res = mergeSkillRanks(...res, ...deco.skills);
             }
         }
     }
@@ -82,6 +92,7 @@ const myEfr = computed<EfrInfo | undefined>(() => {
                 :decoration-display="settings.decorationDisplay"
                 :all-decorations="allDecorations"
                 :all-weapons="allWeapons"
+                @update:weapon-emits="e => (weaponEmits = e)"
             />
             <ArmorSelect
                 :all-armors="allArmors"
@@ -96,7 +107,6 @@ const myEfr = computed<EfrInfo | undefined>(() => {
             <template v-if="myEfr !== undefined">
                 <Efr :efr-info="myEfr" />
             </template>
-
 
             <div class="grid grid-cols-2">
                 <SkillDisplay v-for="skillRank of mergedSkills" v-bind:key="String(skillRank.skill.id)" :skill-rank />
