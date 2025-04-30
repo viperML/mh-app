@@ -54,6 +54,7 @@
     - [ ] Set bonus skills {MVP}
 
 - General UI
+
     - [ ] Max-width on mobile
     - [ ] Better loading state
     - [ ] Hover states for skills
@@ -61,10 +62,17 @@
     - [ ] Use original assets for decorations
     - [ ] Armor rarity color
     - [ ] Add beta indicator
-    - [ ] Sort dialog elements {MVP}
+    - [x] Sort dialog elements {MVP}
     - [ ] Decoration colors and categories
     - [ ] Show empty slots in weapon/armor select
 
 - [ ] SEO meta tags {MVP}
 
 - [ ] Localization {MVP}
+
+- Weapons
+    - [ ] CB Vials
+    - [ ] Gunlance Shells
+    - [ ] HH Notes
+    - [ ] Switchaxe vials
+    - [ ] Bow coatings
