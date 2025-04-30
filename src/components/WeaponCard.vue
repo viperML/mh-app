@@ -2,12 +2,18 @@
 import SkillDisplay from "./SkillDisplay.vue";
 import type { Weapon } from "../scripts/weapon";
 import { GSIcon } from "../assets/weaponIcons";
+import { weaponIcon } from "../assets";
+import { computed } from "vue";
 
 const props = defineProps<{
     weapon?: Weapon | undefined;
 }>();
 
 const iconSize = 20;
+
+const kind = computed(() => {
+    return props.weapon?.kind ?? "great-sword";
+});
 </script>
 
 <template>
@@ -17,10 +23,11 @@ const iconSize = 20;
     >
         <h3 class="col-span-full flex flex-row items-center gap-2">
             <img
-                :src="GSIcon.src"
+                :src="weaponIcon[kind].src"
                 :width="iconSize"
                 :height="iconSize"
                 :class="`colorize-rarity-${props.weapon?.rarity ?? '1'}`"
+                loading="lazy"
             />
             <span :class="props.weapon ? 'text-white' : 'text-neutral-500'">
                 {{ props.weapon?.name ?? "Weapon" }}
