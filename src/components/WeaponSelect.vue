@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref, useTemplateRef, watchEffect, nextTick } from "vue";
+import { reactive, ref, useTemplateRef, watchEffect, computed } from "vue";
 import type { Weapon } from "../scripts/weapon";
 import { parseNumber } from "../scripts/util";
 import DecorationBtn from "./DecorationBtn.vue";
 import DecorationSelect from "./DecorationSelect.vue";
 import type { DecorationDisplay } from "../scripts/settings";
 import type { Decoration, DecoSlot } from "../scripts/decorations";
-import { GSIcon } from "../assets/weaponIcons";
 import WeaponCard from "./WeaponCard.vue";
 
 const props = defineProps<{
@@ -14,11 +13,6 @@ const props = defineProps<{
     allDecorations: Map<number, Decoration>;
     allWeapons: Map<number, Weapon>;
 }>();
-
-const KEYS = {
-    CUSTOM_DMG: "customWeaponDamage",
-    CUSTOM_AFF: "customWeaponAffinity",
-};
 
 export type WeaponEmits = {
     weapon: Weapon | undefined;
@@ -52,19 +46,19 @@ const dialogRef = useTemplateRef("dialogRef");
 
 const decorationSelectRef = useTemplateRef("decorationSelectRef");
 
+// Add filterRank for weapon rarity filtering in dialog
+const filterRank = ref(5);
+
+// Computed filtered weapons for dialog
+const filteredWeapons = computed(() => {
+    return Array.from(props.allWeapons.entries()).filter(([, weapon]) => weapon.rarity > filterRank.value);
+});
+
 function openDecorationSelect(slotLevel: number, slotId: DecoSlot) {
     decorationSelectRef.value?.open("weapon", slotLevel, slotId, selectedDecorations[slotId]);
 }
 
-function handleDecorationUpdate({
-    deco,
-    kind,
-    slotId,
-}: {
-    deco: Decoration | undefined;
-    kind: string;
-    slotId: number;
-}) {
+function handleDecorationUpdate({ deco, slotId }: { deco: Decoration | undefined; kind: string; slotId: number }) {
     console.log(deco, slotId);
     selectedDecorations[slotId as DecoSlot] = deco;
 }
@@ -98,10 +92,22 @@ watchEffect(() => {
 
     <dialog ref="dialogRef" closedby="any">
         <div class="dialog-container">
-            <button class="p-2 text-white bg-zinc-800 hover:bg-zinc-900 rounded-sm">Remove</button>
+            <!-- Weapon rarity filter input -->
+            <label class="mb-2 flex items-center gap-2">
+                <span>Show weapons with rarity &gt;</span>
+                <input
+                    type="number"
+                    v-model="filterRank"
+                    min="0"
+                    max="10"
+                    class="w-16 bg-zinc-900 text-white rounded p-1"
+                    tabindex="2"
+                />
+            </label>
+            <button class="p-2 text-white bg-zinc-800 hover:bg-zinc-900 rounded-sm" autofocus tabindex="1">Remove</button>
             <button
-                v-for="[id, weapon] of props.allWeapons"
-                v-bind:key="id"
+                v-for="[id, weapon] in filteredWeapons"
+                :key="id"
                 @click="
                     selectedWeapon = weapon;
                     selectedDecorations[0] = undefined;
@@ -110,7 +116,7 @@ watchEffect(() => {
                     dialogRef?.close();
                 "
             >
-                <WeaponCard :weapon />
+                <WeaponCard :weapon="weapon" />
             </button>
         </div>
     </dialog>
