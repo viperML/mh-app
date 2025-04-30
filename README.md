@@ -26,9 +26,8 @@
 - [ ] Weapon select
 
     - [ ] Add sharpness indicator {MVP}
-    - [ ] Custom elemental damage
     - [x] Official weapon list {MVP}
-    - [ ] Custom weapon decorations
+    - [ ] Artial weapons {MVP}
 
 - [ ] EFR Display
 

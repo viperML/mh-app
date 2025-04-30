@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import type { SkillRank } from "../scripts/skill";
 
 const props = defineProps<{
@@ -12,8 +13,12 @@ const rectGap = 2;
 const rectRadius = 4;
 const rectSpacing = rectWidth + rectGap; // Total space each rectangle occupies
 
-const maxDisplayedRanks = Math.max(props.skillRank.level, props.skillRank.skill.maxRank);
-const svgWidth = maxDisplayedRanks * rectSpacing;
+const maxDisplayedRanks = computed(() => {
+    return Math.max(props.skillRank.level, props.skillRank.skill.maxRank);
+});
+const svgWidth = computed(() => {
+    return maxDisplayedRanks.value * rectSpacing;
+});
 
 // Function to determine rectangle class based on rank
 const getRectClass = (index: number) => {
@@ -40,7 +45,6 @@ const getRectClass = (index: number) => {
             :rx="rectRadius"
             :class="getRectClass(n)"
         />
-        <!-- y="2" -->
     </svg>
 </template>
 
