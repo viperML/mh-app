@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref, useTemplateRef, watchEffect, computed } from "vue";
-import type { Weapon } from "../scripts/weapon";
+import type { Weapon, WeaponKind } from "../scripts/weapon";
 import { parseNumber } from "../scripts/util";
 import DecorationBtn from "./DecorationBtn.vue";
 import DecorationSelect from "./DecorationSelect.vue";
@@ -44,14 +44,44 @@ watchEffect(() => {
 
 const dialogRef = useTemplateRef("dialogRef");
 
-const decorationSelectRef = useTemplateRef("decorationSelectRef");
+const decorationSelectRef = ref();
 
 // Add filterRank for weapon rarity filtering in dialog
 const filterRank = ref(5);
 
-// Computed filtered weapons for dialog
+// Weapon kinds for filtering
+const weaponKinds: WeaponKind[] = [
+    "great-sword",
+    "long-sword",
+    "sword-shield",
+    "dual-blades",
+    "hammer",
+    "hunting-horn",
+    "lance",
+    "gunlance",
+    "switch-axe",
+    "charge-blade",
+    "insect-glaive",
+    "bow",
+    "light-bowgun",
+    "heavy-bowgun",
+];
+
+const selectedKinds = reactive<Set<WeaponKind>>(new Set());
+
+function toggleKind(kind: WeaponKind) {
+    if (selectedKinds.has(kind)) {
+        selectedKinds.delete(kind);
+    } else {
+        selectedKinds.add(kind);
+    }
+}
+
+// Computed filtered weapons for dialog (by rarity and kind)
 const filteredWeapons = computed(() => {
-    return Array.from(props.allWeapons.entries()).filter(([, weapon]) => weapon.rarity > filterRank.value);
+    const all = Array.from(props.allWeapons.entries()).filter(([, weapon]) => weapon.rarity > filterRank.value);
+    if (selectedKinds.size === 0) return all;
+    return all.filter(([, weapon]) => selectedKinds.has(weapon.kind));
 });
 
 function openDecorationSelect(slotLevel: number, slotId: DecoSlot) {
@@ -92,6 +122,22 @@ watchEffect(() => {
 
     <dialog ref="dialogRef" closedby="any">
         <div class="dialog-container">
+            <!-- Weapon kind filter buttons -->
+            <div class="flex flex-wrap gap-2 mb-2">
+                <button
+                    v-for="kind in weaponKinds"
+                    :key="kind"
+                    :class="[
+                        'px-2 py-1 rounded text-xs',
+                        selectedKinds.size === 0 || selectedKinds.has(kind)
+                            ? 'bg-blue-600 text-white' : 'bg-zinc-700 text-zinc-300',
+                    ]"
+                    @click="toggleKind(kind)"
+                    type="button"
+                >
+                    {{ kind.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+                </button>
+            </div>
             <!-- Weapon rarity filter input -->
             <label class="mb-2 flex items-center gap-2">
                 <span>Show weapons with rarity &gt;</span>
