@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const SkillRankZ = z.object({
     id: z.number(),
-    name: z.string(),
+    name: z.string().nullish(),
     description: z.nullable(z.string()),
     level: z.number(),
 })
@@ -22,7 +22,7 @@ const SkillKindZ = z.enum(["armor", "weapon", "set", "group"]);
 const SkillZ = z.object({
     id: z.number(),
     name: z.string(),
-    description: z.string(),
+    description: z.nullable(z.string()),
     ranks: z.array(SkillRankZ),
     kind: SkillKindZ,
 })
@@ -64,6 +64,32 @@ const DecorationZ = z.object({
     skills: z.array(SkillRankZ),
 })
 
+const WeaponKindZ = z.enum([
+    "bow",
+    "charge-blade",
+    "dual-blades",
+    "great-sword",
+    "gunlance",
+    "hammer",
+    "heavy-bowgun",
+    "hunting-horn",
+    "insect-glaive",
+    "lance",
+    "light-bowgun",
+    "long-sword",
+    "switch-axe",
+    "sword-shield"
+]);
+
+const WeaponZ = z.object({
+    id: z.number(),
+    kind: WeaponKindZ,
+    name: z.string(),
+    rarity: z.number(),
+    skills: z.array(SkillRankZ),
+    affinity: z.number(),
+})
+
 function mkFetcher<T>(url: URL | string, _z: z.ZodType<T>) {
     return async function (): Promise<T> {
         const resp = await fetch(url);
@@ -91,4 +117,9 @@ export const fetchDecorations = mkFetcher(
 export const fetchSkills = mkFetcher(
     "https://wilds.mhdb.io/en/skills",
     z.array(SkillZ),
+)
+
+export const fetchWeapons = mkFetcher(
+    "https://wilds.mhdb.io/en/weapons",
+    z.array(WeaponZ),
 )

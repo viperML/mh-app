@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { fetchArmors, fetchSkills } from '../scripts/api';
+import { fetchArmors, fetchSkills, fetchWeapons } from '../scripts/api';
 
 const count = ref(0);
 
-const skills = await fetchSkills();
-console.log(skills);
+const r = await fetchWeapons();
+console.log(r);
 </script>
 
 <template>
