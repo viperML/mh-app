@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "astro check && astro build",
-    "dev": "astro dev"
+    "dev": "astro dev",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "packageManager": "pnpm@10.15.1",
   "devDependencies": {
