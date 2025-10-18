@@ -1,5 +1,7 @@
 import { expect, test } from "vitest";
+import { fetchArmors, fetchCharms, fetchDecorations, fetchSkills } from "./api";
 
-test.sequential("Skills", async () => {
-  expect(3).toBe(3);
-});
+test("armors", fetchArmors);
+test("charms", fetchCharms)
+test("decorations", fetchDecorations);
+test("skills", fetchSkills);
