@@ -7,6 +7,7 @@ const SkillRankZ = z.object({
     level: z.number(),
 })
 
+
 const ArmorRankZ = z.enum(["low", "high", "master"]);
 
 const ArmorKindZ = z.enum([
@@ -99,27 +100,40 @@ function mkFetcher<T>(url: URL | string, _z: z.ZodType<T>) {
     }
 }
 
-export const fetchArmors = mkFetcher(
+export const fetchArmors: () => Promise<Armor[]> = mkFetcher(
     "https://wilds.mhdb.io/en/armor",
     z.array(ArmorZ)
 );
 
-export const fetchCharms = mkFetcher(
+export const fetchCharms: () => Promise<Charm[]> = mkFetcher(
     "https://wilds.mhdb.io/en/charms",
     z.array(CharmZ)
 )
 
-export const fetchDecorations = mkFetcher(
+export const fetchDecorations: () => Promise<Decoration[]> = mkFetcher(
     "https://wilds.mhdb.io/en/decorations",
     z.array(DecorationZ),
 )
 
-export const fetchSkills = mkFetcher(
+export const fetchSkills: () => Promise<Skill[]> = mkFetcher(
     "https://wilds.mhdb.io/en/skills",
     z.array(SkillZ),
 )
 
-export const fetchWeapons = mkFetcher(
+export const fetchWeapons: () => Promise<Weapon[]> = mkFetcher(
     "https://wilds.mhdb.io/en/weapons",
     z.array(WeaponZ),
 )
+
+export type SkillRank = z.infer<typeof SkillRankZ>;
+export type ArmorRank = z.infer<typeof ArmorRankZ>;
+export type ArmorKind = z.infer<typeof ArmorKindZ>;
+export type SkillKind = z.infer<typeof SkillKindZ>;
+export type Skill = z.infer<typeof SkillZ>;
+export type Armor = z.infer<typeof ArmorZ>;
+export type CharmRank = z.infer<typeof CharmRankZ>;
+export type Charm = z.infer<typeof CharmZ>;
+export type DecorationKind = z.infer<typeof DecorationKindZ>;
+export type Decoration = z.infer<typeof DecorationZ>;
+export type WeaponKind = z.infer<typeof WeaponKindZ>;
+export type Weapon = z.infer<typeof WeaponZ>;
